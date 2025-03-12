@@ -3,8 +3,12 @@ import Logo from "../assets/Local_Linker_Logo.png";
 const Navbar = () => {
   return (
     <nav className="flex justify-between items-center py-4 text-white">
-      <div className="flex items-center gap-2">
-        <img src={Logo} alt="Logo" className="w-10 h-10 p-1 rounded-full" />
+      <div className="flex items-center gap-2 ">
+        <img
+          src={Logo}
+          alt="Logo"
+          className="w-16 aspect-square p-1 rounded-full"
+        />
         <h1 className="text-2xl font-extrabold text-black tracking-wider">
           LocalLinker
         </h1>
