@@ -1,12 +1,34 @@
 import React from "react";
-
+import Logo from "../assets/Local_Linker_Logo.png";
 const Navbar = () => {
   return (
-    <div>
-      <div>
-        <img src="" alt="" />
+    <nav className="flex justify-between items-center py-4 text-white">
+      <div className="flex items-center gap-2">
+        <img src={Logo} alt="Logo" className="w-10 h-10 p-1 rounded-full" />
+        <h1 className="text-2xl font-extrabold text-black tracking-wider">
+          LocalLinker
+        </h1>
       </div>
-    </div>
+
+      <ul className="flex gap-6 text-lg font-semibold">
+        {["Home", "Services", "About", "Contact", "Blog"].map((item, index) => (
+          <li
+            key={index}
+            className="hover:text-[#929194] text-[#333] tracking-wide transition duration-300 cursor-pointer text-black font-bold"
+          >
+            {item}
+          </li>
+        ))}
+      </ul>
+      <div className="flex gap-4">
+        <button className="text-center bg-white text-black w-32 py-2 rounded-md text-sm font-bold border-gray-200 border-2 hover:bg-gray-100 transition duration-100 cursor-pointer">
+          Sign Up
+        </button>
+        <button className="text-center bg-[#80B538] text-white w-32 py-2 rounded-md text-sm font-bold hover:bg-[#80B500] transition duration-100 cursor-pointer">
+          Get Started
+        </button>
+      </div>
+    </nav>
   );
 };
 
