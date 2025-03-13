@@ -1,7 +1,7 @@
 import { FaArrowRight } from "react-icons/fa";
 import React from "react";
 
-const Thirdpage = () => {
+const Features = () => {
   return (
     <div className="flex flex-col items-center justify-center px-10 py-16 space-y-16">
       <div className="flex flex-col md:flex-row items-center justify-between w-full mt-20">
@@ -100,4 +100,4 @@ const Thirdpage = () => {
   );
 };
 
-export default Thirdpage;
+export default Features;
