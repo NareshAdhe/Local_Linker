@@ -7,14 +7,15 @@ const Hero = () => {
       <div className="flex flex-col md:flex-row w-full gap-8">
         {/* Left Content */}
         <div className="md:w-1/2 text-left space-y-6">
-          <h1 className="text-5xl md:text-7xl font-bold leading-snug text-gray-900">
+          <h1 className="text-5xl md:text-6xl font-bold leading-snug text-gray-900">
             Unlock the Power of <br />
             <span className="text-[#80B538] capitalize text-6xl md:text-7xl drop-shadow-md">
               Social Intelligence
             </span>
           </h1>
           <p className="text-lg md:text-xl text-gray-700 opacity-80 leading-relaxed">
-            Gain insights like never before and transform the way you interact with the digital world.
+            Gain insights like never before and transform the way you interact
+            with the digital world.
           </p>
           <div className="flex gap-6 mt-8">
             <button className="px-8 py-4 bg-[#80B538] text-white font-semibold rounded-full flex items-center gap-3 shadow-lg transition-transform transform hover:scale-110 hover:shadow-xl">
