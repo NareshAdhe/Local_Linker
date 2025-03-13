@@ -1,5 +1,5 @@
 import Logo from "../assets/Local_Linker_Logo.png";
-import { Link } from "react-router-dom";
+import {  NavLink, Link } from "react-router-dom";
 import React, { useContext, useState } from "react";
 import { AppContext } from "../context/Context";
 import { useNavigate } from "react-router-dom";
@@ -70,20 +70,28 @@ const Navbar = () => {
       <ul className="flex gap-10 text-lg font-semibold">
         {["Home", "About", "Features", "Reels", "Contact"].map(
           (item, index) => (
-            <Link
+            <NavLink
               key={index}
               to={routes[item]}
-              className="hover:text-[#929194] text-[#333] tracking-wide transition duration-300 cursor-pointer font-bold"
+              className={({ isActive }) =>
+                `hover:text-[#929194] border-b-4 border-[#00000000] text-[#333] tracking-wide transition duration-300 cursor-pointer font-bold ${
+                  isActive ? "border-[#80B500]" : ""
+                }`
+              }
             >
               {item}
-            </Link>
+            </NavLink>
           )
         )}
       </ul>
       <div className="flex items-center gap-8">
-        <Link to={"/search"} className="text-black text-4xl">
-          <CiSearch />
-        </Link>
+        {loggedIn ? (
+          <Link to={"/search"} className="text-black text-4xl">
+            <CiSearch />
+          </Link>
+        ) : (
+          ""
+        )}
         {!loggedIn ? (
           <Link
             to={"/login"}
