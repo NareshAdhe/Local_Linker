@@ -39,7 +39,7 @@ export default function SecPage() {
   {/* Right Image */}
   <div className="md:w-2/5 flex items-center justify-center">
     <img
-      src="logo.jpg"
+      src="https://www.brandwatch.com/wp-content/themes/brandwatch/src/core/endpoints/resize.php?image=themes/brandwatch/src/site--brandwatch.com/assets/img/homepage/collaborate/collaborate_on_data-driven_content-2.jpg&width=0"
       alt="Feature preview"
       className="rounded-xl shadow-lg max-w-full"
     />
