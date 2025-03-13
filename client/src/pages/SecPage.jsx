@@ -7,7 +7,7 @@ const FeatureCard = ({ icon: Icon, title, description }) => (
       <div className="w-1 h-12 bg-gray-300"></div>
     </div>
     <div>
-      <h3 className="text-lg font-semibold text-black">{title}</h3>
+      <h3 className="text-3xl font-semibold text-black">{title}</h3>
       <p className="text-gray-600 text-sm">{description}</p>
     </div>
   </div>
@@ -15,51 +15,37 @@ const FeatureCard = ({ icon: Icon, title, description }) => (
 
 export default function SecPage() {
   const features = [
-    {
-      icon: FaSearch,
-      title: "Conduct deep research",
-      description:
-        "Bring structure and meaning to billions of voices with game-changing AI solutions",
-    },
-    {
-      icon: FaChartBar,
-      title: "Monitor your brand",
-      description: "Analyze market trends and consumer behavior efficiently.",
-    },
-    {
-      icon: FaStar,
-      title: "Create winning content",
-      description: "Generate impactful content based on real insights.",
-    },
-    {
-      icon: FaUsers,
-      title: "Engage with consumers",
-      description:
-        "Understand audience sentiments and build strong connections.",
-    },
+    { icon: FaSearch, title: "Conduct deep research", description: "Bring structure and meaning to billions of voices with game-changing AI solutions" },
+    { icon: FaChartBar, title: "Monitor your brand", description: "Analyze market trends and consumer behavior efficiently." },
+    { icon: FaStar, title: "Create winning content", description: "Generate impactful content based on real insights." },
+    { icon: FaUsers, title: "Engage with consumers", description: "Understand audience sentiments and build strong connections." },
   ];
 
   return (
     <div className="flex flex-col p-10">
-      <div className="max-w-4xl mb-20 mr-40%">
-        <h2 className="text-5xl md:text-6xl font-bold text-black leading-tight">
-          A complementary suite of specialized, best in class tools
-        </h2>
-      </div>
-      <div className="flex flex-col md:flex-row items-center justify-between w-full">
-        <div className=" text-6xl md:text-7xl max-w-lg md:w-1/2 ">
-          {features.map((feature, index) => (
-            <FeatureCard key={index} {...feature} />
-          ))}
-        </div>
-        <div className="md:w-1/2 flex items-center justify-center">
-          <img
-            src="logo.jpg"
-            alt="Feature preview"
-            className="rounded-xl shadow-lg max-w-full"
-          />
-        </div>
-      </div>
+    <div className="max-w-4xl mb-20 mr-40%">
+      <h2 className="text-5xl md:text-6xl font-bold text-black leading-tight">
+        A complementary suite of specialized, best in class tools
+      </h2>
     </div>
+    <div className="flex flex-col md:flex-row items-center justify-between w-full">
+  {/* Left Content */}
+  <div className="text-8xl md:text-9xl w-full md:w-3/5">
+    {features.map((feature, index) => (
+      <FeatureCard key={index} {...feature} />
+    ))}
+  </div>
+
+  {/* Right Image */}
+  <div className="md:w-2/5 flex items-center justify-center">
+    <img
+      src="logo.jpg"
+      alt="Feature preview"
+      className="rounded-xl shadow-lg max-w-full"
+    />
+  </div>
+</div>
+
+  </div>
   );
 }
