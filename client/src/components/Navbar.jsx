@@ -47,9 +47,16 @@ const Navbar = () => {
     }
   };
 
+  const routes = {
+    Home: "/",
+    Reels: "/reels",
+    About: "/about",
+    Contact: "/contact",
+  };
+
   return (
     <nav className="flex justify-between items-center py-4 text-white">
-      <Link to={"/"} className="flex items-center gap-2 ">
+      <Link to={"/"} className="flex items-center gap-2">
         <img
           src={Logo}
           alt="Logo"
@@ -60,10 +67,13 @@ const Navbar = () => {
         </h1>
       </Link>
 
-      <ul className="flex gap-6 text-lg font-semibold">
-        {["Home", "Services", "About", "Contact", "Blog"].map((item, index) => (
+      <ul className="flex gap-10 text-lg font-semibold">
+        {["Home", "Reels", "About", "Contact"].map((item, index) => (
           <li
             key={index}
+            onClick={() => {
+              navigate(routes[item]);
+            }}
             className="hover:text-[#929194] text-[#333] tracking-wide transition duration-300 cursor-pointer font-bold"
           >
             {item}
