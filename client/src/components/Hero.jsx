@@ -18,10 +18,10 @@ const Hero = () => {
             with the digital world.
           </p>
           <div className="flex gap-6 mt-8">
-            <button className="px-8 py-4 bg-[#80B538] text-white font-semibold rounded-full flex items-center gap-3 shadow-lg transition-transform transform hover:scale-110 hover:shadow-xl">
+            <button className="px-8 py-4 bg-[#80B538] text-white font-semibold rounded-md flex items-center gap-3 shadow-lg transition-transform transform hover:scale-105 hover:shadow-xl">
               Get Started <FaArrowRight />
             </button>
-            <button className="px-8 py-4 border border-gray-700 text-gray-800 font-semibold rounded-full bg-white shadow-lg transition-transform transform hover:scale-110 hover:bg-gray-100">
+            <button className="px-8 py-4 border border-gray-700 text-gray-800 font-semibold rounded-md bg-white shadow-lg transition-transform transform hover:scale-105 hover:bg-gray-100">
               Explore Plans
             </button>
           </div>

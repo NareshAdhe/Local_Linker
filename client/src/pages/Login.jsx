@@ -85,13 +85,13 @@ const Login = () => {
   const childVarients = {
     hidden: {
       opacity: 0,
-      y: "50%",
+      y: "10%",
     },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.5,
+        duration: 0.3,
         delay: 0.1,
       },
     },
@@ -116,7 +116,7 @@ const Login = () => {
         variants={childVarients}
         initial="hidden"
         animate="visible"
-        className="container w-96 border-2 border-gray-400 p-5 rounded-md shadow-lg scale-110"
+        className="container w-96 border-2 border-gray-400 p-5 rounded-md scale-110 shadow-xl"
       >
         <h1 className="text-center text-black text-2xl font-bold font-sans mb-4">
           {login ? "Login" : "Sign Up"}

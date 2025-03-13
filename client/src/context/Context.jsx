@@ -15,6 +15,26 @@ const Context = ({ children }) => {
   const [isResetEmailVerified, setIsResetEmailVerified] = useState(false);
 
   useEffect(() => {
+    const fetchUser = async () => {
+      setIsRefreshing(true);
+      try {
+        const url = `${backendURI}/api/auth/user`;
+        const response = await axios.get(url, {
+          withCredentials: true,
+        });
+        if (response.data.success) {
+          setUser(response.data.user);
+          setLoggedIn(true);
+        } else {
+          handleLogout(response.data.message);
+        }
+      } catch (error) {
+        handleLogout(error.message);
+      } finally {
+        setIsRefreshing(false);
+      }
+    };
+
     const handleLogout = (message) => {
       if (localStorage.getItem("authToken")) {
         localStorage.removeItem("authToken");
@@ -22,6 +42,7 @@ const Context = ({ children }) => {
       setLoggedIn(false);
       toast.error(message, { autoClose: 2000 });
     };
+    fetchUser();
   }, []);
 
   return (

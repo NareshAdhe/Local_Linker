@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 // import { TailSpin } from "react-loader-spinner";
 import Button from "../components/Button";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const VerifyOTP = () => {
   const [otp, setOtp] = useState(Array(4).fill(""));
@@ -193,12 +194,46 @@ const VerifyOTP = () => {
     }
   };
 
+  const containerVarients = {
+    hidden: {
+      opacity: 0,
+    },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 0.5,
+        staggerChildren: 0.5,
+      },
+    },
+  };
+
+  const childVarients = {
+    hidden: {
+      opacity: 0,
+      y: "10%",
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.3,
+        delay: 0.1,
+      },
+    },
+  };
+
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-50 w-full p-[5vw]">
-      <div className="w-full sm:w-96 bg-gradient-to-b from-black via-[#00152d] to-white shadow-2xl rounded-lg p-6">
-        <h2 className=" relative text-2xl font-semibold text-center text-white mb-12">
+    <motion.div
+      variants={containerVarients}
+      className="flex justify-center items-center h-fit py-24 bg-gray-50 w-full"
+    >
+      <motion.div
+        variants={childVarients}
+        className="w-full sm:w-96 shadow-xl rounded-lg p-6 border-2 border-gray-300 scale-110"
+      >
+        <h2 className=" relative text-2xl font-semibold text-center text-black mb-12">
           Verify OTP
-          <p className="absolute top-10 left-1/2 -translate-x-1/2 text-white text-base">
+          <p className="absolute top-10 left-1/2 -translate-x-1/2 text-black text-base">
             {expired ? "OTP EXPIRED" : `${timer} seconds`}
           </p>
         </h2>
@@ -228,7 +263,7 @@ const VerifyOTP = () => {
                   type="text"
                   inputMode="numeric"
                   maxLength="1"
-                  className="otpInput w-[12vw] h-[12vw] sm:w-12 sm:h-12 text-center text-2xl border-2 border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="otpInput w-[12vw] h-[12vw] sm:w-12 sm:h-12 text-center text-2xl border-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500 transition-all"
                 />
               ))}
           </div>
@@ -236,21 +271,20 @@ const VerifyOTP = () => {
           <div className="flex justify-center mt-8">
             <Button
               type="submit"
-              className="flex items-center justify-center bg-gray-900 text-white text-lg mx-auto capitalize rounded-md w-32 py-1 mb-3"
+              className="flex cursor-pointer items-center justify-center bg-gray-900 text-white text-lg mx-auto capitalize rounded-md w-32 py-1 mb-3"
               disabled={loading || timer == 0}
             >
-              {loading ? (
-                <TailSpin
-                  visible={true}
-                  height="28"
-                  width="28"
-                  color="#fff"
-                  ariaLabel="tail-spin-loading"
-                  radius="1"
-                />
-              ) : (
-                "Verify OTP"
-              )}
+              {loading
+                ? // <TailSpin
+                  //   visible={true}
+                  //   height="28"
+                  //   width="28"
+                  //   color="#fff"
+                  //   ariaLabel="tail-spin-loading"
+                  //   radius="1"
+                  // />
+                  "Loading..."
+                : "Verify OTP"}
             </Button>
           </div>
 
@@ -273,8 +307,8 @@ const VerifyOTP = () => {
             </p>
           </div>
         </form>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 export default VerifyOTP;
