@@ -4,6 +4,7 @@ import authRouter from "./routes/authRoutes.js";
 import cors from "cors";
 import connectDB from "./config/connectDB.js";
 import dotenv from "dotenv";
+import userRouter from "./routes/UserRoutes.js";
 dotenv.config();
 
 const app = express();
@@ -27,6 +28,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRouter);
+app.use("/api/user", userRouter);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
