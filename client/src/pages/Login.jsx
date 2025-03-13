@@ -110,42 +110,15 @@ const Login = () => {
       variants={containerVarients}
       initial="hidden"
       animate="visible"
-      className="relative p-[5vw] w-screen h-screen bg-white flex items-center justify-center"
+      className="relative flex w-full h-fit py-24 items-center justify-center"
     >
-      <motion.button
-        onClick={() => {
-          setIsLogging(false);
-          navigate("/");
-        }}
-        onHoverStart={() => setIsHovered(true)}
-        onHoverEnd={() => setIsHovered(false)}
-        whileTap={{ scale: 0.95, transition: { duration: 0.2 } }}
-        initial={{ opacity: 0, x: "100%" }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.5, delay: 0.5 }}
-        className="absolute inline-flex items-center gap-1 text-xl text-white p-2 rounded-md top-10 left-5 bg-black"
-      >
-        <motion.span
-          animate={{ x: isHovered ? -5 : 0 }}
-          transition={{
-            type: "spring",
-            stiffness: 500,
-            damping: 10,
-            velocity: 200,
-            duration: 0.5,
-          }}
-        >
-          <IoIosArrowRoundBack size={30} />
-        </motion.span>{" "}
-        <span>Home</span>
-      </motion.button>
       <motion.div
         variants={childVarients}
         initial="hidden"
         animate="visible"
-        className="container w-96 bg-gradient-to-b from-black via-[#00152d] to-white p-5 rounded-md shadow-lg"
+        className="container w-96 border-2 border-gray-400 p-5 rounded-md shadow-lg scale-110"
       >
-        <h1 className="text-center text-white text-2xl font-bold font-sans mb-4">
+        <h1 className="text-center text-black text-2xl font-bold font-sans mb-4">
           {login ? "Login" : "Sign Up"}
         </h1>
         <form method="post" onSubmit={handleSubmit} autoComplete="off">
@@ -153,7 +126,7 @@ const Login = () => {
             <>
               <label
                 htmlFor="name"
-                className="text-xl text-white inline-block mb-2"
+                className="text-xl text-black inline-block mb-2"
               >
                 Name
               </label>
@@ -162,18 +135,19 @@ const Login = () => {
                 value={formData.name}
                 onChange={handleChange}
                 autoComplete="off"
-                className="relative bg-[#E8F0FE] rounded px-2 py-1 text-black text-lg border-none focus:outline focus:outline-gray-600 focus:outline-2 focus:shadow-sm mb-5 w-full"
+                className="relative bg-[#E8F0FE] rounded px-2 py-1 text-black text-lg border-none focus:outline-gray-600 focus:outline-2 focus:shadow-sm mb-5 w-full"
                 required
                 type="text"
                 name="name"
                 id="name"
+                placeholder="Name"
               />
               <br />
             </>
           )}
           <label
             htmlFor="email"
-            className="text-xl text-white inline-block mb-2"
+            className="text-xl text-black inline-block mb-2"
           >
             Email
           </label>
@@ -187,11 +161,12 @@ const Login = () => {
             type="email"
             name="email"
             id="email"
+            placeholder="Email"
           />
           <br />
           <label
             htmlFor="password"
-            className="text-xl text-white inline-block mb-2"
+            className="text-xl text-black inline-block mb-2"
           >
             Password
           </label>
@@ -206,6 +181,7 @@ const Login = () => {
               type={passwordVisible ? "text" : "password"}
               name="password"
               id="password"
+              placeholder="Password"
             />
             <div
               className="absolute -translate-y-1/3 top-1/3 right-3 cursor-pointer"
@@ -227,7 +203,7 @@ const Login = () => {
             onMouseEnter={() => setButtonHovered(true)}
             onMouseLeave={() => setButtonHovered(false)}
             type="submit"
-            className="relative flex items-center justify-center bg-gray-900 text-white text-lg mx-auto capitalize rounded-md w-full py-1 mb-3"
+            className="relative cursor-pointer flex items-center justify-center bg-gray-900 text-white text-lg mx-auto capitalize rounded-md w-full py-1 mb-3"
             disabled={loading}
           >
             {loading

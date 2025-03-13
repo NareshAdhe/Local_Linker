@@ -1,10 +1,8 @@
-
 import React from "react";
 
 const ContactMe = () => {
   return (
     <div className="flex flex-col md:flex-row items-center justify-center  bg-gray-100 p-6 rounded-3xl">
-      {/* Left Side - Image */}
       <div className="md:w-1/2 flex justify-center">
         <img
           src="https://plus.unsplash.com/premium_photo-1684966119402-e237566d4576?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" // Replace with actual image URL
@@ -13,7 +11,6 @@ const ContactMe = () => {
         />
       </div>
 
-      {/* Right Side - Contact Form */}
       <div className="md:w-1/2 bg-white p-8 rounded-lg shadow-lg mt-6 md:mt-0">
         <h2 className="text-2xl font-bold text-gray-900 text-center mb-6">
           Contact Me
