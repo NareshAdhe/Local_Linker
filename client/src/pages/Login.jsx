@@ -22,7 +22,7 @@ const Login = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const { backendURI, setOtpSent, setIsLogging } = useContext(AppContext);
+  const { backendURI, setOtpSent } = useContext(AppContext);
   const [isHovered, setIsHovered] = useState(false);
   const [buttonHovered, setButtonHovered] = useState(false);
 

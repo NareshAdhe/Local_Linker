@@ -12,7 +12,6 @@ const VerifyOTP = () => {
   const navigate = useNavigate();
   const {
     backendURI,
-    setIsLogging,
     setLoggedIn,
     reset,
     setIsResetEmailVerified,
@@ -136,7 +135,6 @@ const VerifyOTP = () => {
         );
         setLoading(false);
         if (response.data.success) {
-          setIsLogging(false);
           setLoggedIn(true);
           localStorage.setItem("authToken", response.data.token);
           navigate("/");

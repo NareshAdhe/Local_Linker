@@ -5,8 +5,8 @@ import validator from "validator";
 import transporter from "../config/transporter.js";
 
 export const register = async (req, res) => {
-  const { name, email, password } = req.body;
-  if (!name || !email || !password) {
+  const { name, email, password, role } = req.body;
+  if (!name || !email || !password || !role) {
     return res.json({
       success: false,
       message: "Please Fill the details properly",
@@ -37,6 +37,7 @@ export const register = async (req, res) => {
       name,
       email,
       password: hashedPassword,
+      role,
     });
     const token = jwt.sign({ email }, process.env.JWT_SECRET, {
       expiresIn: "5m",

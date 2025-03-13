@@ -2,7 +2,7 @@ import React from "react";
 
 const ContactMe = () => {
   return (
-    <div className="flex gap-10 flex-col md:flex-row items-center justify-center bg-gray-900 rounded-lg mb-10">
+    <div className="mt-12 flex gap-10 flex-col md:flex-row items-center justify-center bg-gray-900 rounded-lg mb-10">
       <div className="text-white p-8 md:p-16">
         <div className="max-w-2xl">
           <h1 className="text-4xl md:text-5xl font-bold leading-tight">

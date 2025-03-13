@@ -9,12 +9,12 @@ import { TbLogout } from "react-icons/tb";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { CiSearch } from "react-icons/ci";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
-  const { backendURI, setLoggedIn, loggedIn, setIsLogging } =
-    useContext(AppContext);
+  const { backendURI, setLoggedIn, loggedIn } = useContext(AppContext);
 
   const handleLogout = async () => {
     try {
@@ -28,7 +28,6 @@ const Navbar = () => {
       );
 
       if (response.data.success) {
-        setIsLogging(false);
         setLoggedIn(false);
         navigate("/");
         localStorage.removeItem("authToken");
@@ -49,8 +48,9 @@ const Navbar = () => {
 
   const routes = {
     Home: "/",
-    Reels: "/reels",
     About: "/about",
+    Features: "/features",
+    Reels: "/reels",
     Contact: "/contact",
   };
 
@@ -68,19 +68,22 @@ const Navbar = () => {
       </Link>
 
       <ul className="flex gap-10 text-lg font-semibold">
-        {["Home", "Reels", "About", "Contact"].map((item, index) => (
-          <li
-            key={index}
-            onClick={() => {
-              navigate(routes[item]);
-            }}
-            className="hover:text-[#929194] text-[#333] tracking-wide transition duration-300 cursor-pointer font-bold"
-          >
-            {item}
-          </li>
-        ))}
+        {["Home", "About", "Features", "Reels", "Contact"].map(
+          (item, index) => (
+            <Link
+              key={index}
+              to={routes[item]}
+              className="hover:text-[#929194] text-[#333] tracking-wide transition duration-300 cursor-pointer font-bold"
+            >
+              {item}
+            </Link>
+          )
+        )}
       </ul>
-      <div className="flex gap-4">
+      <div className="flex items-center gap-8">
+        <Link to={"/search"} className="text-black text-4xl">
+          <CiSearch />
+        </Link>
         {!loggedIn ? (
           <Link
             to={"/login"}
