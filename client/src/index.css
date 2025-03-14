@@ -6,4 +6,8 @@ body::-webkit-scrollbar {
   display: none;
 }
 
+.chat::-webkit-scrollbar {
+  display: none;
+}
+
 @import "tailwindcss";

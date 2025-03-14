@@ -15,6 +15,6 @@ userRouter.get("/get/:location", authMiddleware, getUsersByCity);
 userRouter.get("/profile", authMiddleware, profile);
 userRouter.put("/update", authMiddleware, updateUser);
 userRouter.post("/save-image", authMiddleware, saveProfileImage);
-userRouter.get("/influencer/:id", authMiddleware, getOtherUser);
+userRouter.get("/otherUser/:id", authMiddleware, getOtherUser);
 
 export default userRouter;
