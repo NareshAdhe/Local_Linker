@@ -1,26 +1,22 @@
 import User, { Businessman, Influencer } from "../models/userModel.js";
 import multer from "multer";
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  },
-});
+const storage = multer.memoryStorage();
 const upload = multer({ storage }).single("profileImage");
-
 export const updateUser = async (req, res) => {
+  const userId = req.body.userId;
+
   upload(req, res, async (err) => {
     if (err) {
       return res.json({
         success: false,
-        message: "File upload failed",
+        message: err.message || "File upload failed",
       });
     }
 
     try {
+      req.body.userId = userId;
+
       const {
         name,
         location,
@@ -30,69 +26,55 @@ export const updateUser = async (req, res) => {
         description,
         category,
         rating,
-        userId,
+        image,
       } = req.body;
 
       if (!userId) {
-        return res.status(400).json({
-          success: false,
-          message: "User ID is required",
-        });
+        return res.json({ success: false, message: "User ID is required" });
       }
 
-      // Validate phone number (Indian 10-digit)
       const phoneRegex = /^[6-9]\d{9}$/;
       if (number && !phoneRegex.test(number)) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid phone number",
-        });
+        return res.json({ success: false, message: "Invalid phone number" });
       }
 
-      let user = await User.findById(userId);
+      const user = await User.findById(userId);
       if (!user) {
-        return res.status(404).json({
-          success: false,
-          message: "User not found",
-        });
+        return res.json({ success: false, message: "User not found" });
       }
 
-      // Handle profile image upload
-      const image = req.file ? `/uploads/${req.file.filename}` : user.image;
+      const BufferImage = req.file
+        ? `data:${req.file.mimetype};base64,${req.file.buffer.toString(
+            "base64"
+          )}`
+        : image;
 
-      const updatedData = { name, location, number, image };
+      const updatedData = { name, location, number, BufferImage };
 
-      // Update user based on role
+      let updatedUser;
       if (user.role === "businessman") {
-        user = await Businessman.findByIdAndUpdate(
+        updatedUser = await Businessman.findByIdAndUpdate(
           userId,
           { ...updatedData, businessName, industry, description },
           { new: true, runValidators: true }
         );
       } else if (user.role === "influencer") {
-        user = await Influencer.findByIdAndUpdate(
+        updatedUser = await Influencer.findByIdAndUpdate(
           userId,
           { ...updatedData, category, rating },
           { new: true, runValidators: true }
         );
       } else {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid user role",
-        });
+        return res.json({ success: false, message: "Invalid user role" });
       }
 
       return res.status(200).json({
         success: true,
         message: "Profile updated successfully",
-        user,
+        user: updatedUser,
       });
     } catch (error) {
-      console.error("Error updating user:", error);
-      return res.status(500).json({
-        success: false,
-        message: "Internal server error",
-      });
+      return res.json({ success: false, message: "Internal server error" });
     }
   });
 };

@@ -176,6 +176,11 @@ const Search = () => {
                 key={index}
                 className="cursor-pointer bg-white rounded-xl shadow-md overflow-hidden transition transform hover:scale-105 hover:shadow-lg"
               >
+                <img
+                  src={user.image}
+                  alt={user.name}
+                  className="w-full h-40 object-cover object-top"
+                />
                 <div className="p-4">
                   <h3 className="text-lg font-semibold text-gray-800">
                     {user.name}

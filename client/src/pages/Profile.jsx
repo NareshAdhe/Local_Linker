@@ -9,6 +9,9 @@ const Profile = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({});
+  const [updateLoading, setUpdateLoading] = useState(false);
+  const [imageUploaded, setImageUploaded] = useState(false);
+  const [imageLoad, setImageLoad] = useState(false);
   const [profileImage, setProfileImage] = useState(
     "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=600&auto=format&fit=crop&q=60"
   );
@@ -37,18 +40,21 @@ const Profile = () => {
     };
 
     if (loggedIn) fetchUser();
-  }, [backendURI, loggedIn]);
+  }, [backendURI, loggedIn, imageUploaded]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      const previewURL = URL.createObjectURL(file);
       setNewImage(file);
-      setProfileImage(URL.createObjectURL(file));
+      setProfileImage(previewURL);
+      setFormData((prev) => ({ ...prev, image: previewURL }));
     }
   };
 
   const handleImageUpload = async () => {
     if (!newImage) return;
+    setImageLoad(true);
     try {
       const formDataToSend = new FormData();
       formDataToSend.append("profileImage", newImage);
@@ -64,14 +70,18 @@ const Profile = () => {
       );
 
       if (response.data.success) {
-        toast.success("Profile image updated successfully");
+        toast.success("Profile image updated successfully", {
+          autoClose: 2000,
+        });
         setNewImage(null);
+        setImageUploaded((prev) => !prev);
       } else {
-        toast.error(response.data.message);
+        toast.error(response.data.message, { autoClose: 2000 });
       }
     } catch (error) {
-      toast.error(error.message || "Error updating image");
+      toast.error(error.message || "Error updating image", { autoClose: 2000 });
     }
+    setImageLoad(false);
   };
 
   if (loading) return <p>Loading...</p>;
@@ -83,12 +93,12 @@ const Profile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Validate Indian phone number
+    setUpdateLoading(true);
     const phoneRegex = /^[6-9]\d{9}$/;
     if (formData.number && !phoneRegex.test(formData.number)) {
       toast.error(
-        "Invalid Indian phone number. It should be 10 digits and start with 6-9."
+        "Invalid Indian phone number. It should be 10 digits and start with 6-9.",
+        { autoClose: 2000 }
       );
       return;
     }
@@ -109,7 +119,7 @@ const Profile = () => {
       );
 
       if (response.data.success) {
-        toast.success(response.data.message);
+        toast.success(response.data.message, { autoClose: 2000 });
         setUser(response.data.user);
       } else {
         toast.error(response.data.message);
@@ -117,6 +127,7 @@ const Profile = () => {
     } catch (error) {
       toast.error(error.message || "Something went wrong", { autoClose: 2000 });
     }
+    setUpdateLoading(false);
   };
 
   return (
@@ -125,7 +136,7 @@ const Profile = () => {
 
       <div className="relative w-32 h-32 mx-auto">
         <img
-          src={profileImage}
+          src={formData.image || profileImage}
           alt="Profile"
           className="w-32 h-32 object-cover rounded-full border border-gray-300"
         />
@@ -139,13 +150,18 @@ const Profile = () => {
           />
         </label>
       </div>
+      {user?.role === "influencer" && (
+        <div className="text-center mt-2 text-gray-800 text-lg">
+          Rating: {formData.rating || 0}
+        </div>
+      )}
       {newImage && (
         <div className="flex items-center justify-center">
           <button
             onClick={handleImageUpload}
-            className="mt-4 w-48 cursor-pointer bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"
+            className="mt-4 w-40 cursor-pointer bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"
           >
-            Save Image
+            {imageLoad ? "Saving..." : "Save Image"}
           </button>
         </div>
       )}
@@ -251,19 +267,6 @@ const Profile = () => {
                 className="w-full p-2 border rounded-lg"
               />
             </div>
-            <div>
-              <label className="block text-gray-700">Rating</label>
-              <input
-                type="number"
-                name="rating"
-                value={formData.rating || 0}
-                onChange={handleChange}
-                className="w-full p-2 border rounded-lg"
-                min="0"
-                max="5"
-                step="0.1"
-              />
-            </div>
           </>
         )}
 
@@ -271,7 +274,7 @@ const Profile = () => {
           type="submit"
           className="w-full cursor-pointer bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"
         >
-          Update Profile
+          {updateLoading ? "Updating..." : "Update Profile"}
         </button>
       </form>
     </div>
