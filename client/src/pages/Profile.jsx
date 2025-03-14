@@ -10,7 +10,6 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({});
   const [updateLoading, setUpdateLoading] = useState(false);
-  const [imageUploaded, setImageUploaded] = useState(false);
   const [imageLoad, setImageLoad] = useState(false);
   const [newImage, setNewImage] = useState(null);
 
@@ -22,6 +21,7 @@ const Profile = () => {
         });
         if (response.data.success) {
           setUser(response.data.user);
+          console.log(response.data.user);
           setFormData(response.data.user);
         } else {
           toast.error(response.data.message);
@@ -41,69 +41,32 @@ const Profile = () => {
     if (file) {
       const previewURL = URL.createObjectURL(file);
       setNewImage(file);
+      console.log(previewURL);
       setFormData((prev) => ({ ...prev, image: previewURL }));
     }
   };
-
-  const handleImageUpload = async () => {
-    if (!newImage) return;
-    setImageLoad(true);
-    try {
-      const formDataToSend = new FormData();
-      formDataToSend.append("profileImage", newImage);
-
-      const response = await axios.put(
-        `${backendURI}/api/user/update`,
-        formDataToSend,
-        {
-          withCredentials: true,
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
-
-      if (response.data.success) {
-        toast.success("Profile image updated successfully", {
-          autoClose: 2000,
-        });
-        setNewImage(null);
-        setImageUploaded((prev) => !prev);
-      } else {
-        toast.error(response.data.message, { autoClose: 2000 });
-      }
-    } catch (error) {
-      toast.error(error.message || "Error updating image", { autoClose: 2000 });
-    }
-    setImageLoad(false);
-  };
-
-  if (loading) return <p>Loading...</p>;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setUpdateLoading(true);
-    const phoneRegex = /^[6-9]\d{9}$/;
-    if (formData.number && !phoneRegex.test(formData.number)) {
-      toast.error(
-        "Invalid Indian phone number. It should be 10 digits and start with 6-9.",
-        { autoClose: 2000 }
-      );
+  const handleImageUpload = async () => {
+    if (!newImage) {
+      toast.error("Please select an image first.");
       return;
     }
 
-    try {
-      const formDataToSend = new FormData();
-      Object.entries(formData).forEach(([key, value]) => {
-        formDataToSend.append(key, value);
-      });
+    setImageLoad(true);
 
-      const response = await axios.put(
-        `${backendURI}/api/user/update`,
-        formDataToSend,
+    const formData = new FormData();
+    formData.append("userId", user._id);
+    formData.append("profileImage", newImage);
+
+    try {
+      const response = await axios.post(
+        `${backendURI}/api/user/save-image`,
+        formData,
         {
           withCredentials: true,
           headers: { "Content-Type": "multipart/form-data" },
@@ -111,9 +74,45 @@ const Profile = () => {
       );
 
       if (response.data.success) {
-        setFormData(response.data.user);
-        toast.success(response.data.message, { autoClose: 2000 });
         setUser(response.data.user);
+        toast.success("Image uploaded successfully", { autoClose: 2000 });
+        setNewImage(null);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      toast.error(error.message || "Something went wrong", { autoClose: 2000 });
+    } finally {
+      setImageLoad(false);
+    }
+  };
+
+  if (loading) return <p>Loading...</p>;
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setUpdateLoading(true);
+
+    const phoneRegex = /^[6-9]\d{9}$/;
+    if (formData.number && !phoneRegex.test(formData.number)) {
+      toast.error(
+        "Invalid Indian phone number. It should be 10 digits and start with 6-9.",
+        { autoClose: 2000 }
+      );
+      setUpdateLoading(false);
+      return;
+    }
+
+    try {
+      const response = await axios.put(
+        `${backendURI}/api/user/update`,
+        { userId: user.id, ...formData },
+        { withCredentials: true }
+      );
+
+      if (response.data.success) {
+        setUser(response.data.user);
+        toast.success("Profile updated successfully", { autoClose: 2000 });
       } else {
         toast.error(response.data.message);
       }
@@ -152,7 +151,13 @@ const Profile = () => {
         <div className="flex items-center justify-center">
           <button
             onClick={handleImageUpload}
-            className="mt-4 w-40 cursor-pointer bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"
+            disabled={imageLoad}
+            className={`mt-4 w-40 cursor-pointer text-white py-2 rounded-lg 
+          ${
+            imageLoad
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-blue-500 hover:bg-blue-600"
+          }`}
           >
             {imageLoad ? "Saving..." : "Save Image"}
           </button>

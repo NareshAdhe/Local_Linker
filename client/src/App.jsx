@@ -11,6 +11,8 @@ import Features from "./pages/Features";
 import Contact from "./pages/ContactMe";
 import Search from "./pages/Search";
 import Reset from "./pages/Reset";
+import OtherUser from "./pages/OtherUser";
+import ChatApp from "./pages/ChatApp";
 const App = () => {
   return (
     <>
@@ -27,6 +29,8 @@ const App = () => {
           <Route path="/features" element={<Features />} />
           <Route path="/search" element={<Search />} />
           <Route path="/reset" element={<Reset />} />
+          <Route path="/profile/:id" element={<OtherUser />} />
+          <Route path="/chat/:receiver" element={<ChatApp />} />
         </Routes>
       </div>
     </>

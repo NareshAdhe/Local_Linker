@@ -12,6 +12,7 @@ const Context = ({ children }) => {
   const [otpSent, setOtpSent] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isResetEmailVerified, setIsResetEmailVerified] = useState(false);
+  const [user, setUser] = useState({});
 
   useEffect(() => {
     if (localStorage.getItem("authToken")) {
@@ -49,6 +50,25 @@ const Context = ({ children }) => {
     fetchUsers();
   }, []);
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await axios.get(`${backendURI}/api/user/profile`, {
+          withCredentials: true,
+        });
+        if (response.data.success) {
+          setUser(response.data.user);
+        } else {
+          toast.error(response.data.message);
+        }
+      } catch (error) {
+        toast.error(error.message || "Error fetching profile");
+      }
+    };
+
+    if (loggedIn) fetchUser();
+  }, [backendURI, loggedIn]);
+
   return (
     <AppContext.Provider
       value={{
@@ -65,6 +85,8 @@ const Context = ({ children }) => {
         setIsRefreshing,
         users,
         setUsers,
+        user,
+        setUser,
       }}
     >
       {children}

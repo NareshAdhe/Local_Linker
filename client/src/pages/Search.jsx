@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { AppContext } from "../context/Context";
+import { Link } from "react-router-dom";
 
 const Search = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -172,30 +173,29 @@ const Search = () => {
         {filteredUsers.length > 0 ? (
           <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredUsers.map((user, index) => (
-              <li
-                key={index}
-                className="cursor-pointer bg-white rounded-xl shadow-md overflow-hidden transition transform hover:scale-105 hover:shadow-lg"
-              >
-                <img
-                  src={user.image}
-                  alt={user.name}
-                  className="w-full h-40 object-cover object-top"
-                />
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold text-gray-800">
-                    {user.name}
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    {user.location || "Unknown Location"}
-                  </p>
-                  <p className="text-sm font-medium text-gray-700">
-                    {user.role} |{" "}
-                    <span className="font-bold">
-                      {user.followers?.toLocaleString() || 0} Followers
-                    </span>
-                  </p>
-                </div>
-              </li>
+              <Link key={index} to={`/profile/${user._id}`}>
+                <li className="cursor-pointer bg-white rounded-xl shadow-md overflow-hidden transition transform hover:scale-105 hover:shadow-lg">
+                  <img
+                    src={user.image}
+                    alt={user.name}
+                    className="w-full h-40 object-cover object-top"
+                  />
+                  <div className="p-4">
+                    <h3 className="text-lg font-semibold text-gray-800">
+                      {user.name}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      {user.location || "Unknown Location"}
+                    </p>
+                    <p className="text-sm font-medium text-gray-700">
+                      {user.role} |{" "}
+                      <span className="font-bold">
+                        {user.followers?.toLocaleString() || 0} Followers
+                      </span>
+                    </p>
+                  </div>
+                </li>
+              </Link>
             ))}
           </ul>
         ) : (
