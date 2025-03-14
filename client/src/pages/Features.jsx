@@ -1,12 +1,9 @@
 import { FaArrowRight } from "react-icons/fa";
 import React from "react";
 
-const Thirdpage = () => {
+const Features = () => {
   return (
-    <div
-      className="flex flex-col items-center justify-center py-16 space-y-16"
-      id="features"
-    >
+    <div className="flex flex-col items-center justify-center px-10 py-16 space-y-16">
       <div className="flex flex-col md:flex-row items-center justify-between w-full mt-20">
         <div className="md:w-1/3 flex justify-center">
           <img
@@ -18,19 +15,18 @@ const Thirdpage = () => {
 
         <div className="md:w-1/2 text-left mt-10 md:mt-0">
           <h1 className="text-5xl md:text-6xl font-bold text-black leading-tight">
-            React to the <span className="text-green-500">trends</span> that
-            matter
+          City-Specific <span className="text-green-500">Influencer</span> Discovery
+            
           </h1>
           <p className="text-gray-600 text-2xl mt-4">
-            Access the world’s largest archive of consumer opinion and leverage
-            advanced proprietary and generative AI to{" "}
+          Businesses can search for influencers in their city based{" "}
             <span className="font-semibold">
-              discover new trends before anyone else and make smarter decisions.
+            on niche categories like travel, food, fashion, etc., ensuring hyper-local collaborations.
             </span>
           </p>
 
           <button className="mt-6 px-6 py-3 flex items-center text-white bg-green-500 rounded-lg hover:bg-gray-900 transition hover:cursor-pointer">
-            Get started <FaArrowRight className="ml-2" />
+            Search <FaArrowRight className="ml-2" />
           </button>
         </div>
       </div>
@@ -38,15 +34,13 @@ const Thirdpage = () => {
       <div className="flex flex-col md:flex-row items-center justify-between w-full mt-20">
         <div className="md:w-1/2 text-left">
           <h1 className="text-5xl md:text-6xl font-bold text-black leading-tight">
-            React to the <span className="text-green-500">trends</span> that
-            matter
+          <span className="text-green-500">AI-Based </span> Influencer Reports
+            
           </h1>
           <p className="text-gray-600 text-2xl mt-4">
-            Access the world’s largest archive of consumer opinion and leverage
-            advanced proprietary and generative AI to{" "}
+          Enables direct communication between shop owners and influencers {" "}
             <span className="font-semibold">
-              discover new trends before anyone else and make smarter decisions.
-            </span>
+            within the platform for seamless negotiation and collaboration.            </span>
           </p>
         </div>
 
@@ -69,14 +63,13 @@ const Thirdpage = () => {
 
         <div className="md:w-1/2 text-left mt-10 md:mt-0">
           <h1 className="text-5xl md:text-6xl font-bold text-black leading-tight">
-            React to the <span className="text-green-500">trends</span> that
-            matter
+          Ratings and<span className="text-green-500"> Reviews </span> Systems
+            
           </h1>
           <p className="text-gray-600 text-2xl mt-4">
-            Access the world’s largest archive of consumer opinion and leverage
-            advanced proprietary and generative AI to{" "}
+          Businesses can rate influencers based on past {" "}
             <span className="font-semibold">
-              discover new trends before anyone else and make smarter decisions.
+            collaborations, ensuring credibility and trust in the selection process.
             </span>
           </p>
         </div>
@@ -85,14 +78,13 @@ const Thirdpage = () => {
       <div className="flex flex-col md:flex-row items-center justify-between w-full mt-30">
         <div className="md:w-1/2 text-left">
           <h1 className="text-5xl md:text-6xl font-bold text-black leading-tight">
-            React to the <span className="text-green-500">trends</span> that
-            matter
+          AI <span className="text-green-500">Chatbot</span> for Instant Support 
+            
           </h1>
           <p className="text-gray-600 text-2xl mt-4">
-            Access the world’s largest archive of consumer opinion and leverage
-            advanced proprietary and generative AI to{" "}
+          An AI-powered chatbot assists users with queries, helping them find{" "}
             <span className="font-semibold">
-              discover new trends before anyone else and make smarter decisions.
+            influencers, troubleshoot issues, and navigate the platform easily.
             </span>
           </p>
         </div>
@@ -108,4 +100,4 @@ const Thirdpage = () => {
   );
 };
 
-export default Thirdpage;
+export default Features;
