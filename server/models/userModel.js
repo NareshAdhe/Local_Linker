@@ -16,6 +16,12 @@ const userSchema = new Schema(
       required: true,
       enum: ["businessman", "influencer"],
     },
+    followers: { type: Number, default: 0 },
+    image: {
+      type: String,
+      default:
+        "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fHVzZXJ8ZW58MHx8MHx8fDA%3D",
+    },
   },
   { timestamps: true, discriminatorKey: "role" }
 );
@@ -39,7 +45,6 @@ const Influencer = User.discriminator(
   new Schema(
     {
       category: { type: String },
-      followers: { type: Number, default: 0 },
       rating: { type: Number, default: 0 },
     },
     { timestamps: true }

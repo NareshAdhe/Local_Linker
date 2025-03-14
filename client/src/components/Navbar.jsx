@@ -1,5 +1,5 @@
 import Logo from "../assets/Local_Linker_Logo.png";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import React, { useContext, useState } from "react";
 import { AppContext } from "../context/Context";
 import { useNavigate } from "react-router-dom";
@@ -68,22 +68,33 @@ const Navbar = () => {
       </Link>
 
       <ul className="flex gap-10 text-lg font-semibold">
-        {["Home", "About", "Features", "Reels", "Contact"].map(
-          (item, index) => (
-            <Link
-              key={index}
-              to={routes[item]}
-              className="hover:text-[#929194] text-[#333] tracking-wide transition duration-300 cursor-pointer font-bold"
-            >
-              {item}
-            </Link>
-          )
-        )}
+        {[
+          "Home",
+          "About",
+          "Features",
+          "Reels",
+          ...(loggedIn ? ["Contact"] : []),
+        ].map((item, index) => (
+          <NavLink
+            key={index}
+            to={routes[item]}
+            className={({ isActive }) =>
+              isActive
+                ? "text-[#80B538] font-bold tracking-wide transition duration-300 cursor-pointer"
+                : "text-[#333] hover:text-[#929194] font-bold tracking-wide transition duration-300 cursor-pointer"
+            }
+          >
+            {item}
+          </NavLink>
+        ))}
       </ul>
+
       <div className="flex items-center gap-8">
-        <Link to={"/search"} className="text-black text-4xl">
-          <CiSearch />
-        </Link>
+        {loggedIn && (
+          <Link to={"/search"} className="text-black text-4xl">
+            <CiSearch />
+          </Link>
+        )}
         {!loggedIn ? (
           <Link
             to={"/login"}

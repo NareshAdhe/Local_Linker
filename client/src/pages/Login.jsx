@@ -5,8 +5,6 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { GoEye, GoEyeClosed } from "react-icons/go";
 import { toast } from "react-toastify";
-// import { TailSpin } from "react-loader-spinner";
-import { IoIosArrowRoundBack } from "react-icons/io";
 import { motion } from "framer-motion";
 import { PiSignIn } from "react-icons/pi";
 import { useNavigate } from "react-router-dom";
@@ -17,13 +15,13 @@ const Login = () => {
     name: "",
     email: "",
     password: "",
+    role: "businessman",
   });
   const navigate = useNavigate();
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const { backendURI, setOtpSent } = useContext(AppContext);
-  const [isHovered, setIsHovered] = useState(false);
   const [buttonHovered, setButtonHovered] = useState(false);
 
   const handleChange = (e) => {
@@ -110,7 +108,7 @@ const Login = () => {
       variants={containerVarients}
       initial="hidden"
       animate="visible"
-      className="relative flex w-full h-fit py-24 items-center justify-center"
+      className="relative flex w-full h-fit py-24 items-center justify-center flex-col"
     >
       <motion.div
         variants={childVarients}
@@ -135,7 +133,7 @@ const Login = () => {
                 value={formData.name}
                 onChange={handleChange}
                 autoComplete="off"
-                className="relative bg-[#E8F0FE] rounded px-2 py-1 text-black text-lg border-none focus:outline-gray-600 focus:outline-2 focus:shadow-sm mb-5 w-full"
+                className="relative bg-[#E8F0FE] rounded px-3 py-2 text-black text-lg border-none focus:outline-gray-600 focus:outline-2 focus:shadow-sm mb-5 w-full"
                 required
                 type="text"
                 name="name"
@@ -156,7 +154,7 @@ const Login = () => {
             value={formData.email}
             onChange={handleChange}
             autoComplete="off"
-            className="bg-[#E8F0FE] rounded-md px-4 py-2 text-black text-lg border-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:shadow-lg mb-5 w-full transition-all duration-300"
+            className="bg-[#E8F0FE] rounded-md px-3 py-2 text-black text-lg border-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:shadow-lg mb-5 w-full transition-all duration-300"
             required
             type="email"
             name="email"
@@ -176,7 +174,7 @@ const Login = () => {
               autoComplete="off"
               value={formData.password}
               onChange={handleChange}
-              className="bg-[#E8F0FE] rounded-md px-4 py-2 text-black text-lg border-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:shadow-lg mb-5 w-full transition-all duration-300"
+              className="bg-[#E8F0FE] rounded-md px-3 py-2 text-black text-lg border-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:shadow-lg w-full transition-all duration-300"
               required
               type={passwordVisible ? "text" : "password"}
               name="password"
@@ -184,7 +182,7 @@ const Login = () => {
               placeholder="Password"
             />
             <div
-              className="absolute -translate-y-1/3 top-1/3 right-3 cursor-pointer"
+              className="absolute top-1/3 right-3 cursor-pointer"
               onClick={togglePasswordVisibility}
             >
               {passwordVisible ? <GoEye /> : <GoEyeClosed />}
@@ -192,33 +190,52 @@ const Login = () => {
             {login && (
               <Link
                 to={"/reset"}
-                className="absolute left-0 -bottom-1 text-white hover:text-gray-200 hover:underline text-sm"
+                className="absolute left-0 -bottom-6 text-black hover:text-gray-900 hover:underline text-sm"
               >
                 forgot password?
               </Link>
             )}
           </div>
           <br />
+          {!login && (
+            <div className="mb-5">
+              <div className="flex items-center justify-between gap-2">
+                <button
+                  type="button"
+                  className={`px-4 py-2 bg-[#E8F0FE] rounded-lg cursor-pointer transition-all duration-300 ${
+                    formData.role !== "businessman" && "bg-gray-200"
+                  }`}
+                  onClick={() =>
+                    setFormData({ ...formData, role: "businessman" })
+                  }
+                >
+                  Businessman
+                </button>
+
+                <button
+                  type="button"
+                  className={`px-4 py-2 rounded-lg cursor-pointer transition-all duration-300 ${
+                    formData.role === "influencer"
+                      ? "bg-[#E8F0FE]"
+                      : "bg-gray-200"
+                  }`}
+                  onClick={() =>
+                    setFormData({ ...formData, role: "influencer" })
+                  }
+                >
+                  Influencer
+                </button>
+              </div>
+            </div>
+          )}
           <Button
             onMouseEnter={() => setButtonHovered(true)}
             onMouseLeave={() => setButtonHovered(false)}
             type="submit"
-            className="relative cursor-pointer flex items-center justify-center bg-gray-900 text-white text-lg mx-auto capitalize rounded-md w-full py-1 mb-3"
+            className="relative cursor-pointer flex items-center justify-center bg-gray-900 text-white text-lg mx-auto capitalize rounded-md w-full py-1 mt-5 mb-2"
             disabled={loading}
           >
-            {loading
-              ? //   <TailSpin
-                //     visible={true}
-                //     height="28"
-                //     width="28"
-                //     color="#fff"
-                //     ariaLabel="tail-spin-loading"
-                //     radius="1"
-                //   />
-                "Loading..."
-              : login
-              ? "Sign In"
-              : "Sign Up"}
+            {loading ? "Loading..." : login ? "Sign In" : "Sign Up"}
             <motion.span
               animate={{
                 right: buttonHovered ? 10 : 16,

@@ -22,23 +22,31 @@ const Context = ({ children }) => {
     }
   }, []);
 
-  useEffect(async () => {
-    setIsRefreshing(true);
-    try {
-      const response = await axios.get(backendURI + "/api/user/get", {
-        withCredentials: true,
-      });
+  useEffect(() => {
+    const fetchUsers = async () => {
+      setIsRefreshing(true);
+      try {
+        const response = await axios.get(backendURI + "/api/user/get", {
+          withCredentials: true,
+        });
 
-      if (response.data.success) {
-        setUsers(response.data.users);
-      } else {
-        toast.error(response.data.message || "Failed to fetch users", {
+        if (response.data.success) {
+          setUsers(response.data.users);
+        } else {
+          toast.error(response.data.message || "Failed to fetch users", {
+            autoClose: 2000,
+          });
+        }
+      } catch (error) {
+        toast.error(error.message || "Error fetching users", {
           autoClose: 2000,
         });
+      } finally {
+        setIsRefreshing(false);
       }
-    } catch (error) {
-      toast.error(error.message || "Error fetching users", { autoClose: 2000 });
-    }
+    };
+
+    fetchUsers();
   }, []);
 
   return (

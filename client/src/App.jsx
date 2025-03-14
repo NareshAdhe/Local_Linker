@@ -5,11 +5,12 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import VerifyOTP from "./pages/VerifyOtp";
 import Reel from "./components/Reel";
-import Profile from "./pages/ContactMe";
+import Profile from "./pages/Profile";
 import About from "./pages/About";
 import Features from "./pages/Features";
 import Contact from "./pages/ContactMe";
 import Search from "./pages/Search";
+import Reset from "./pages/Reset";
 const App = () => {
   return (
     <>
@@ -25,6 +26,7 @@ const App = () => {
           <Route path="/about" element={<About />} />
           <Route path="/features" element={<Features />} />
           <Route path="/search" element={<Search />} />
+          <Route path="/reset" element={<Reset />} />
         </Routes>
       </div>
     </>
