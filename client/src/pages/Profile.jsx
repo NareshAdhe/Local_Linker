@@ -12,9 +12,6 @@ const Profile = () => {
   const [updateLoading, setUpdateLoading] = useState(false);
   const [imageUploaded, setImageUploaded] = useState(false);
   const [imageLoad, setImageLoad] = useState(false);
-  const [profileImage, setProfileImage] = useState(
-    "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=600&auto=format&fit=crop&q=60"
-  );
   const [newImage, setNewImage] = useState(null);
 
   useEffect(() => {
@@ -26,9 +23,6 @@ const Profile = () => {
         if (response.data.success) {
           setUser(response.data.user);
           setFormData(response.data.user);
-          if (response.data.user.profileImage) {
-            setProfileImage(response.data.user.profileImage);
-          }
         } else {
           toast.error(response.data.message);
         }
@@ -40,14 +34,13 @@ const Profile = () => {
     };
 
     if (loggedIn) fetchUser();
-  }, [backendURI, loggedIn, imageUploaded]);
+  }, [backendURI, loggedIn]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       const previewURL = URL.createObjectURL(file);
       setNewImage(file);
-      setProfileImage(previewURL);
       setFormData((prev) => ({ ...prev, image: previewURL }));
     }
   };
@@ -58,7 +51,6 @@ const Profile = () => {
     try {
       const formDataToSend = new FormData();
       formDataToSend.append("profileImage", newImage);
-      formDataToSend.append("userId", user._id);
 
       const response = await axios.put(
         `${backendURI}/api/user/update`,
@@ -119,6 +111,7 @@ const Profile = () => {
       );
 
       if (response.data.success) {
+        setFormData(response.data.user);
         toast.success(response.data.message, { autoClose: 2000 });
         setUser(response.data.user);
       } else {
@@ -136,7 +129,7 @@ const Profile = () => {
 
       <div className="relative w-32 h-32 mx-auto">
         <img
-          src={formData.image || profileImage}
+          src={formData.image}
           alt="Profile"
           className="w-32 h-32 object-cover rounded-full border border-gray-300"
         />
