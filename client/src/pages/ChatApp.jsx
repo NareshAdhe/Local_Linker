@@ -137,7 +137,7 @@ export default function ChatApp() {
         />
         <button
           onClick={sendMessage}
-          className="ml-3 bg-blue-500 text-white px-5 py-3 rounded-lg shadow-md hover:bg-green-700 transition"
+          className="ml-3 bg-blue-500 text-white px-5 py-3 rounded-lg shadow-md hover:bg-blue-700 cursor-pointer transition"
         >
           Send
         </button>

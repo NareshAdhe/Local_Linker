@@ -68,7 +68,7 @@ const OtherUser = () => {
     <>
       {user ? (
         <div className="min-h-screen bg-white flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-2xl overflow-hidden max-w-4xl w-full flex flex-col md:flex-row">
+          <div className="bg-white rounded-xl shadow-2xl overflow-hidden max-w-4xl w-full flex flex-col md:flex-row border-2 border-gray-300">
             <div className="md:w-1/2 flex items-center justify-center p-4">
               <img
                 src={user.image}

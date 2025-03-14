@@ -35,7 +35,7 @@ const Search = () => {
     };
 
     fetchUsers();
-  }, [backendURI, setUsers]); // ✅ Added dependencies to avoid unnecessary re-renders
+  }, [backendURI, setUsers]);
 
   useEffect(() => {
     let updatedUsers = [...(users || [])];
