@@ -37,8 +37,7 @@ export default function ChatApp() {
   useEffect(() => {
     socketRef.current = io(backendURI);
     let socket = socketRef.current;
-
-    socket.emit("join", { sender });
+    socket.emit("join", sender);
 
     socket.on("newMessage", (newMsg) => {
       setMessages((prev) => [...prev, newMsg]);
@@ -98,26 +97,41 @@ export default function ChatApp() {
       {/* Chat Box (Smaller Height) */}
       <div className="chat flex-1 max-h-[60vh] overflow-y-auto p-4 bg-white rounded-md border-2 border-gray-300">
         {messages.length > 0 ? (
-          messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`flex flex-col my-2 ${
-                msg.sender === sender ? "items-end" : "items-start"
-              }`}
-            >
-              <span className="text-sm font-bold text-gray-600 mb-1">
-                {msg.sender === sender ? user.name : Receiver.name}
-              </span>
+          messages.map((msg, index) => {
+            // Convert ISO timestamp to readable time
+            const formattedTime = new Date(msg.createdAt).toLocaleTimeString(
+              "en-US",
+              {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+              }
+            );
 
+            return (
               <div
-                className={`px-3 py-2 max-w-xs rounded-lg shadow-md text-white ${
-                  msg.sender === sender ? "bg-green-500" : "bg-blue-500"
+                key={index}
+                className={`flex flex-col my-2 ${
+                  msg.sender === sender ? "items-end" : "items-start"
                 }`}
               >
-                {msg.message}
+                <span className="text-sm font-bold text-gray-600 mb-1">
+                  {msg.sender === sender ? user.name : Receiver.name}
+                </span>
+
+                <div
+                  className={`px-3 py-2 max-w-xs rounded-lg shadow-md text-white ${
+                    msg.sender === sender ? "bg-green-500" : "bg-blue-500"
+                  }`}
+                >
+                  {msg.message}
+                </div>
+                <span className="text-xs text-gray-500 mt-1">
+                  {formattedTime}
+                </span>
               </div>
-            </div>
-          ))
+            );
+          })
         ) : (
           <p className="text-center text-gray-500">No messages yet</p>
         )}

@@ -15,11 +15,15 @@ const initSocket = (server) => {
   io.on("connection", (socket) => {
     console.log("User connected:", socket.id);
 
-    socket.on("join", async (userId) => {
-      await redis.set(userId, socket.id);
+    socket.on("join", async (sender) => {
+      if (typeof sender !== "string") {
+        console.error("Invalid sender received in join event:", sender);
+        return;
+      }
+      await redis.set(sender, socket.id);
 
       const unreadMessages = await Message.find({
-        receiver: userId,
+        receiver: sender,
         isRead: false,
       });
 
@@ -28,7 +32,7 @@ const initSocket = (server) => {
       });
 
       await Message.updateMany(
-        { receiver: userId, isRead: false },
+        { receiver: sender, isRead: false },
         { isRead: true }
       );
     });

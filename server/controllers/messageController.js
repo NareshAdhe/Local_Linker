@@ -28,14 +28,24 @@ export const sendMessage = async (req, res) => {
   const { sender, receiver, message } = req.body;
   const io = req.io;
 
+  if (!message.trim() || !sender || !receiver) return;
+
+  if (typeof receiver !== "string") {
+    console.error("Invalid receiver:", receiver);
+    toast.error("Invalid receiver ID");
+    return;
+  }
+
   try {
-    const newMessage = new Message({ sender, receiver, message });
+    const newMessage = new Message(messageObj);
     await newMessage.save();
     const receiverSocketId = await redis.get(receiver);
+    const senderSocketId = await redis.get(sender);
+    io.to(senderSocketId).emit("newMessage", newMessage);
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("newMessage", newMessage);
     } else {
-      console.log("User is offline. Message stored in DB.");
+      console.log("Message Stored in DB");
     }
 
     res.json({
