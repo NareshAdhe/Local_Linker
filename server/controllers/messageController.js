@@ -5,7 +5,6 @@ const redis = new Redis();
 
 export const getMessages = async (req, res) => {
   const { sender, receiver } = req.params;
-  console.log("Request for messages: ");
 
   try {
     const messages = await Message.find({
@@ -20,7 +19,10 @@ export const getMessages = async (req, res) => {
       messages,
     });
   } catch (error) {
-    res.status(500).json({ error: "Error fetching messages" });
+    res.json({
+      success: false,
+      message: error,
+    });
   }
 };
 
@@ -30,29 +32,42 @@ export const sendMessage = async (req, res) => {
 
   if (!message.trim() || !sender || !receiver) return;
 
-  if (typeof receiver !== "string") {
-    console.error("Invalid receiver:", receiver);
-    toast.error("Invalid receiver ID");
-    return;
-  }
-
   try {
+    const messageObj = { sender, receiver, message };
     const newMessage = new Message(messageObj);
     await newMessage.save();
     const receiverSocketId = await redis.get(receiver);
     const senderSocketId = await redis.get(sender);
-    io.to(senderSocketId).emit("newMessage", newMessage);
     if (receiverSocketId) {
+      newMessage.isRead = true;
+      await newMessage.save();
       io.to(receiverSocketId).emit("newMessage", newMessage);
-    } else {
-      console.log("Message Stored in DB");
     }
-
+    io.to(senderSocketId).emit("newMessage", newMessage);
     res.json({
       success: true,
       newMessage,
     });
   } catch (error) {
-    res.status(500).json({ error: "Error sending message" });
+    res.status(500).json({
+      success: false,
+      message: error,
+    });
   }
 };
+
+export const markMessagesAsRead = async (req, res) => {
+  try {
+    const { sender, receiver } = req.body;
+    const io = req.io;
+    await Message.updateMany(
+      { sender, receiver, isRead: false },
+      { $set: { isRead: true }}
+    );
+    io.emit("messageRead",{sender,receiver});
+    return res.json({ success: true });
+  } catch (error) {
+    return res.json({ success: false, message: error });
+  }
+};
+

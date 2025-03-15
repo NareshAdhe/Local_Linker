@@ -23,11 +23,18 @@ export default function ChatApp() {
         );
         if (response.data.success) {
           setReceiver(response.data.user);
+          const res = await axios.post(backendURI + "/api/chat/markAsRead", {
+            sender: receiver,
+            receiver: sender,
+          });
+          if (!res.data.success) {
+            toast.error(res.data.message, { autoClose: 2000 });
+          }
         } else {
-          toast.error(response.data.message);
+          toast.error(response.data.message, { autoClose: 2000 });
         }
       } catch (error) {
-        toast.error(error.message || "Error fetching profile");
+        toast.error(error, { autoClose: 2000 });
       }
     };
 
@@ -38,7 +45,15 @@ export default function ChatApp() {
     socketRef.current = io(backendURI);
     let socket = socketRef.current;
     socket.emit("join", sender);
-
+    socket.on("messageRead", ({ sender: msgSender, receiver: msgReceiver }) => {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.sender === msgSender && msg.receiver === msgReceiver
+            ? { ...msg, isRead: true }
+            : msg
+        )
+      );
+    });
     socket.on("newMessage", (newMsg) => {
       setMessages((prev) => [...prev, newMsg]);
     });
@@ -79,7 +94,7 @@ export default function ChatApp() {
         toast.error(response.data.message, { autoClose: 2000 });
       }
     } catch (error) {
-      toast.error("Error sending message", { autoClose: 2000 });
+      toast.error(error, { autoClose: 2000 });
     }
   };
 
@@ -89,16 +104,13 @@ export default function ChatApp() {
 
   return (
     <div className="flex flex-col h-fit w-full">
-      {/* Header */}
       <div className="text-black text-xl font-bold p-4 text-center">
         Chat with {Receiver?.name || "Unknown"}
       </div>
 
-      {/* Chat Box (Smaller Height) */}
       <div className="chat flex-1 max-h-[60vh] overflow-y-auto p-4 bg-white rounded-md border-2 border-gray-300">
         {messages.length > 0 ? (
           messages.map((msg, index) => {
-            // Convert ISO timestamp to readable time
             const formattedTime = new Date(msg.createdAt).toLocaleTimeString(
               "en-US",
               {
@@ -120,11 +132,20 @@ export default function ChatApp() {
                 </span>
 
                 <div
-                  className={`px-3 py-2 max-w-xs rounded-lg shadow-md text-white ${
-                    msg.sender === sender ? "bg-green-500" : "bg-blue-500"
+                  className={`px-2 py-1 max-w-xs rounded-lg shadow-md text-white ${
+                    msg.sender === sender
+                      ? msg.isRead
+                        ? "bg-green-500"
+                        : "bg-yellow-500"
+                      : "bg-blue-500"
                   }`}
                 >
-                  {msg.message}
+                  {msg.message}{" "}
+                  {msg.sender === sender && (
+                    <span className="text-[10px] ml-1">
+                      {msg.isRead ? "read" : "unread"}
+                    </span>
+                  )}
                 </div>
                 <span className="text-xs text-gray-500 mt-1">
                   {formattedTime}
@@ -137,7 +158,6 @@ export default function ChatApp() {
         )}
       </div>
 
-      {/* Input Box (Always Visible) */}
       <div className="mt-4 w-full flex items-center">
         <input
           type="text"

@@ -13,13 +13,8 @@ const initSocket = (server) => {
   });
 
   io.on("connection", (socket) => {
-    console.log("User connected:", socket.id);
 
     socket.on("join", async (sender) => {
-      if (typeof sender !== "string") {
-        console.error("Invalid sender received in join event:", sender);
-        return;
-      }
       await redis.set(sender, socket.id);
 
       const unreadMessages = await Message.find({
@@ -44,7 +39,6 @@ const initSocket = (server) => {
         const storedSocketId = await redis.get(key);
         if (storedSocketId === socket.id) {
           await redis.del(key);
-          console.log(`User ${key} disconnected`);
           break;
         }
       }
