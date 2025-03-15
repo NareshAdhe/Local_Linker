@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useRef } from "react";
 import axios from "axios";
 import { io } from "socket.io-client";
 import { AppContext } from "../context/Context";
@@ -11,8 +11,8 @@ export default function ChatApp() {
   const { backendURI, user, loggedIn } = useContext(AppContext);
   const sender = user?._id;
   const { receiver } = useParams();
-  const [socket, setSocket] = useState(null);
   const [Receiver, setReceiver] = useState({});
+  const socketRef = useRef(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -35,20 +35,17 @@ export default function ChatApp() {
   }, [loggedIn, receiver]);
 
   useEffect(() => {
-    const newSocket = io(backendURI);
-    setSocket(newSocket);
+    socketRef.current = io(backendURI);
+    let socket = socketRef.current;
 
-    newSocket.on("newMessage", (newMsg) => {
-      if (
-        (newMsg.sender === sender && newMsg.receiver === receiver) ||
-        (newMsg.sender === receiver && newMsg.receiver === sender)
-      ) {
-        setMessages((prev) => [...prev, newMsg]);
-      }
+    socket.emit("join", { sender });
+
+    socket.on("newMessage", (newMsg) => {
+      setMessages((prev) => [...prev, newMsg]);
     });
 
     return () => {
-      newSocket.disconnect();
+      socket.disconnect();
     };
   }, [backendURI, sender, receiver]);
 
@@ -72,15 +69,15 @@ export default function ChatApp() {
   const sendMessage = async () => {
     if (!message.trim() || !sender || !receiver) return;
     try {
-      const res = await axios.post(
+      const response = await axios.post(
         `${backendURI}/api/chat/send`,
         { sender, receiver, message },
         { withCredentials: true }
       );
-
-      setMessage("");
-      if (socket) {
-        socket.emit("newMessage", res.data);
+      if (response.data.success) {
+        setMessage("");
+      } else {
+        toast.error(response.data.message, { autoClose: 2000 });
       }
     } catch (error) {
       toast.error("Error sending message", { autoClose: 2000 });
@@ -88,7 +85,7 @@ export default function ChatApp() {
   };
 
   useEffect(() => {
-    fetchMessages();
+    if (sender && receiver) fetchMessages();
   }, [sender, receiver]);
 
   return (

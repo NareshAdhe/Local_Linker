@@ -6,28 +6,14 @@ import connectDB from "./config/connectDB.js";
 import dotenv from "dotenv";
 import userRouter from "./routes/UserRoutes.js";
 import chatRouter from "./routes/chatRoutes.js";
-import { Server } from "socket.io";
+import initSocket from "./config/socket.js";
 import http from "http";
 
 dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
-
-export const io = new Server(server, {
-  cors: {
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
-    credentials: true,
-  },
-});
-
-io.on("connection", (socket) => {
-  console.log("User connected:", socket.id);
-
-  socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
-  });
-});
+const io = initSocket(server);
 
 app.use(cookieParser());
 app.use(
@@ -45,7 +31,6 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-// Pass io to chat routes
 app.use(
   "/api/chat",
   (req, res, next) => {

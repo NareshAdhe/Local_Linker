@@ -1,4 +1,7 @@
 import Message from "../models/messageModel.js";
+import Redis from "ioredis";
+
+const redis = new Redis();
 
 export const getMessages = async (req, res) => {
   const { sender, receiver } = req.params;
@@ -28,9 +31,17 @@ export const sendMessage = async (req, res) => {
   try {
     const newMessage = new Message({ sender, receiver, message });
     await newMessage.save();
-    io.emit("newMessage", newMessage);
+    const receiverSocketId = await redis.get(receiver);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("newMessage", newMessage);
+    } else {
+      console.log("User is offline. Message stored in DB.");
+    }
 
-    res.json(newMessage);
+    res.json({
+      success: true,
+      newMessage,
+    });
   } catch (error) {
     res.status(500).json({ error: "Error sending message" });
   }
