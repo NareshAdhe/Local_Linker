@@ -1,11 +1,8 @@
-import { getMessages, markMessagesAsRead, sendMessage } from "../controllers/messageController.js";
-import authMiddleware from "../middlewares/authMiddleware.js";
+import { getMessages } from "../controllers/messageController.js";
 import express from "express";
+import authMiddleware from "../middlewares/authMiddleware.js";
 
 const chatRouter = express.Router();
 
-chatRouter.get("/messages/:sender/:receiver", authMiddleware, getMessages);
-chatRouter.post("/send", authMiddleware, sendMessage);
-chatRouter.post("/markAsRead", markMessagesAsRead);
-
+chatRouter.get("/:sender/:receiver", authMiddleware , getMessages);
 export default chatRouter;

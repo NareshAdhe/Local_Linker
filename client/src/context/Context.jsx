@@ -1,6 +1,7 @@
 import React, { createContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { io } from "socket.io-client";
 
 export const AppContext = createContext();
 
@@ -13,6 +14,88 @@ const Context = ({ children }) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isResetEmailVerified, setIsResetEmailVerified] = useState(false);
   const [user, setUser] = useState({});
+  const [socket, setSocket] = useState(null);
+  const [unreadUsers, setUnreadUsers] = useState([]);
+  const [chatUsers, setChatUsers] = useState([]);
+
+  useEffect(() => {
+    const fetchChatUsers = async () => {
+      try {
+        const { data } = await axios.get(
+          `${backendURI}/api/user/chat-users/${user._id}`,
+          {
+            withCredentials: true,
+          }
+        );
+        if (data.success) {
+          setChatUsers(data.users);
+        } else {
+          toast.error(data.message, { autoClose: 2000 });
+        }
+      } catch (error) {
+        toast.error(error.message, { autoClose: 2000 });
+      }
+    };
+
+    if (loggedIn && user) fetchChatUsers();
+  }, [loggedIn, user]);
+
+  useEffect(() => {
+    if (!socket || !users.length) return;
+
+    socket.on("updateChatUsers", (user) => {
+      setChatUsers((prevChatUsers) => {
+        if (!prevChatUsers.includes(user)) {
+          return [...prevChatUsers, user];
+        }
+        return prevChatUsers;
+      });
+    });
+
+    socket.on("unReadMessages", (groupedMessages) => {
+      const unreadUserData = Object.entries(groupedMessages)
+        .map(([userId, count]) => {
+          const userObj = users.find((u) => u._id === userId);
+          return userObj ? [userObj, count] : null;
+        })
+        .filter(Boolean);
+
+      setUnreadUsers(unreadUserData);
+    });
+
+    socket.on("updateUnreadCount", ({ sender, count }) => {
+      setUnreadUsers((prev) => {
+        let updatedUsers = prev.map(([user, unreadCount]) =>
+          user._id === sender ? [user, count] : [user, unreadCount]
+        );
+
+        if (!updatedUsers.some(([user]) => user._id === sender) && count > 0) {
+          const senderUser = users.find((u) => u._id === sender);
+          if (senderUser) updatedUsers.push([senderUser, count]);
+        }
+
+        return updatedUsers.filter(([_, unreadCount]) => unreadCount > 0);
+      });
+    });
+
+    return () => {
+      socket.off("unReadMessages");
+      socket.off("updateUnreadCount");
+      socket.off("updateChatUsers");
+    };
+  }, [socket, users]);
+
+  useEffect(() => {
+    const newSocket = io(backendURI, {
+      withCredentials: true,
+    });
+
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     if (localStorage.getItem("authToken")) {
@@ -67,7 +150,13 @@ const Context = ({ children }) => {
     };
 
     if (loggedIn) fetchUser();
-  }, [backendURI, loggedIn]);
+  }, [loggedIn]);
+
+  useEffect(() => {
+    if (socket && user?._id) {
+      socket.emit("join", user._id);
+    }
+  }, [socket, user]);
 
   return (
     <AppContext.Provider
@@ -87,6 +176,11 @@ const Context = ({ children }) => {
         setUsers,
         user,
         setUser,
+        socket,
+        unreadUsers,
+        setUnreadUsers,
+        chatUsers,
+        setChatUsers,
       }}
     >
       {children}

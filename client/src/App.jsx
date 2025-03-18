@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useContext } from "react";
 import Navbar from "./components/Navbar";
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
@@ -13,6 +13,8 @@ import Search from "./pages/Search";
 import Reset from "./pages/Reset";
 import OtherUser from "./pages/OtherUser";
 import ChatApp from "./pages/ChatApp";
+import UnRead from "./pages/UnRead";
+import ChatHistory from "./pages/ChatHistory";
 const App = () => {
   return (
     <>
@@ -31,6 +33,8 @@ const App = () => {
           <Route path="/reset" element={<Reset />} />
           <Route path="/profile/:id" element={<OtherUser />} />
           <Route path="/chat/:receiver" element={<ChatApp />} />
+          <Route path="/unread" element={<UnRead />} />
+          <Route path="/chats" element={<ChatHistory/>} />
         </Routes>
       </div>
     </>

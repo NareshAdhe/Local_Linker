@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  chatHistory,
   getOtherUser,
   getUsers,
   getUsersByCity,
@@ -16,5 +17,5 @@ userRouter.get("/profile", authMiddleware, profile);
 userRouter.put("/update", authMiddleware, updateUser);
 userRouter.post("/save-image", authMiddleware, saveProfileImage);
 userRouter.get("/otherUser/:id", authMiddleware, getOtherUser);
-
+userRouter.get("/chat-users/:userId",authMiddleware, chatHistory);
 export default userRouter;

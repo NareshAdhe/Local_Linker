@@ -1,6 +1,5 @@
 import { useEffect, useState, useContext, useRef } from "react";
 import axios from "axios";
-import { io } from "socket.io-client";
 import { AppContext } from "../context/Context";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -8,117 +7,194 @@ import { toast } from "react-toastify";
 export default function ChatApp() {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
-  const { backendURI, user, loggedIn } = useContext(AppContext);
+  const { backendURI, user, loggedIn, socket } = useContext(AppContext);
   const sender = user?._id;
   const { receiver } = useParams();
   const [Receiver, setReceiver] = useState({});
-  const socketRef = useRef(null);
+  const chatContainerRef = useRef(null);
 
   useEffect(() => {
     const fetchUser = async () => {
+      if (!receiver) return;
+
       try {
-        const response = await axios.get(
+        const { data } = await axios.get(
           `${backendURI}/api/user/otherUser/${receiver}`,
           { withCredentials: true }
         );
-        if (response.data.success) {
-          setReceiver(response.data.user);
-          const res = await axios.post(backendURI + "/api/chat/markAsRead", {
-            sender: receiver,
-            receiver: sender,
+
+        if (data.success) {
+          setReceiver({
+            ...data.user,
+            lastSeen: new Intl.DateTimeFormat("en-IN", {
+              timeZone: "Asia/Kolkata",
+              day: "2-digit",
+              month: "2-digit",
+              year: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            }).format(new Date(data.user.lastSeen)),
           });
-          if (!res.data.success) {
-            toast.error(res.data.message, { autoClose: 2000 });
-          }
         } else {
-          toast.error(response.data.message, { autoClose: 2000 });
+          toast.error(data.message, { autoClose: 2000 });
         }
       } catch (error) {
-        toast.error(error, { autoClose: 2000 });
+        toast.error(error.message, { autoClose: 2000 });
       }
     };
 
-    if (loggedIn && receiver) fetchUser();
-  }, [loggedIn, receiver]);
+    if (loggedIn) fetchUser();
+  }, [loggedIn, receiver, backendURI]);
 
   useEffect(() => {
-    socketRef.current = io(backendURI);
-    let socket = socketRef.current;
-    socket.emit("join", sender);
-    socket.on("messageRead", ({ sender: msgSender, receiver: msgReceiver }) => {
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.sender === msgSender && msg.receiver === msgReceiver
-            ? { ...msg, isRead: true }
-            : msg
-        )
-      );
-    });
-    socket.on("newMessage", (newMsg) => {
-      setMessages((prev) => [...prev, newMsg]);
-    });
+    if (!socket || !sender || !receiver) return;
+
+    socket.emit("chatJoined", { sender, receiver });
+
+    const handleNewMessage = (newMsg) => {
+      if((newMsg.receiver === sender) || newMsg.sender === sender){
+        setMessages((prev) => [...prev, newMsg]);
+      }
+    };
+
+    const handleGetMessages = ({updatedMessages,newSender}) => {
+      if(newSender === receiver){
+        setMessages(updatedMessages);
+      }
+    };
+
+    const handleOnline = (userId) => {
+      if (receiver === userId) {
+        setReceiver((prev) => ({ ...prev, isOnline: true }));
+      }
+    };
+
+    const handleOffline = ({ userId, lastSeen }) => {
+      if (receiver === userId) {
+        const date = new Date();
+        setReceiver((prev) => ({
+          ...prev,
+          isOnline: false,
+          lastSeen: new Intl.DateTimeFormat("en-IN", {
+            timeZone: "Asia/Kolkata",
+            day: "2-digit",
+            month: "2-digit",
+            year: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+          }).format(date),
+        }));
+      }
+    };
+
+    socket.on("newMessage", handleNewMessage);
+    socket.on("getMessages", handleGetMessages);
+    socket.on("online", handleOnline);
+    socket.on("offline", handleOffline);
 
     return () => {
-      socket.disconnect();
+      socket.emit("leaveChat", { sender, receiver });
+      socket.off("newMessage", handleNewMessage);
+      socket.off("getMessages", handleGetMessages);
+      socket.off("online", handleOnline);
+      socket.off("offline", handleOffline);
     };
-  }, [backendURI, sender, receiver]);
+  }, [sender, receiver, socket]);
 
-  const fetchMessages = async () => {
-    if (!sender || !receiver) return;
-    try {
-      const response = await axios.get(
-        `${backendURI}/api/chat/messages/${sender}/${receiver}`,
-        { withCredentials: true }
-      );
-      if (response.data.success) {
-        setMessages(response.data.messages);
-      } else {
-        toast.error(response.data.message, { autoClose: 2000 });
-      }
-    } catch (error) {
-      toast.error("Error fetching messages", { autoClose: 2000 });
-    }
-  };
+  useEffect(() => {
+    const fetchMessages = async () => {
+      if (!sender || !receiver) return;
 
-  const sendMessage = async () => {
-    if (!message.trim() || !sender || !receiver) return;
-    try {
-      const response = await axios.post(
-        `${backendURI}/api/chat/send`,
-        { sender, receiver, message },
-        { withCredentials: true }
-      );
-      if (response.data.success) {
-        setMessage("");
-      } else {
-        toast.error(response.data.message, { autoClose: 2000 });
+      try {
+        const { data } = await axios.get(
+          `${backendURI}/api/chat/${sender}/${receiver}`,
+          { withCredentials: true }
+        );
+
+        if (data.success) setMessages(data.messages);
+      } catch (error) {
+        toast.error("Error loading messages");
       }
-    } catch (error) {
-      toast.error(error, { autoClose: 2000 });
+    };
+
+    fetchMessages();
+  }, [sender, receiver, backendURI]);
+
+  const sendMessage = (e) => {
+    e.preventDefault();
+
+    if (!socket || !sender || !receiver || !message.trim()) {
+      toast.error("Please enter a message", { autoClose: 2000 });
+      return;
     }
+
+    const messageObj = {
+      sender,
+      receiver,
+      message,
+    };
+
+    socket.emit("sendMessage", messageObj);
+    setMessage("");
   };
 
   useEffect(() => {
-    if (sender && receiver) fetchMessages();
-  }, [sender, receiver]);
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   return (
     <div className="flex flex-col h-fit w-full">
-      <div className="text-black text-xl font-bold p-4 text-center">
-        Chat with {Receiver?.name || "Unknown"}
-      </div>
+      <div className="flex items-center p-4 rounded-t-lg bg-gray-100 border border-b-0 border-gray-300">
+        {Receiver?.image && (
+          <img
+            src={Receiver.image}
+            alt="Profile"
+            className="w-10 h-10 rounded-full mr-3"
+          />
+        )}
 
-      <div className="chat flex-1 max-h-[60vh] overflow-y-auto p-4 bg-white rounded-md border-2 border-gray-300">
+        <div className="flex flex-col">
+          <span className="text-black text-lg font-semibold">
+            {Receiver?.name || "Unknown"}
+          </span>
+          <div className="flex items-center text-sm text-gray-600">
+            <span
+              className={`w-2.5 h-2.5 rounded-full mr-1 ${
+                Receiver?.isOnline ? "bg-green-500" : "bg-gray-400"
+              }`}
+            ></span>
+            {Receiver?.isOnline ? (
+              "Online"
+            ) : (
+              <div className="flex items-center text-sm text-gray-600">
+                {Receiver?.lastSeen
+                  ? `Last seen: ${Receiver.lastSeen}`
+                  : "Offline"}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+      <div
+        ref={chatContainerRef}
+        className="chat flex-1 max-h-[70vh] overflow-y-auto p-4 bg-white rounded-md border border-t-0 rounded-t-[0px] border-gray-300"
+      >
         {messages.length > 0 ? (
           messages.map((msg, index) => {
-            const formattedTime = new Date(msg.createdAt).toLocaleTimeString(
-              "en-US",
-              {
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: true,
-              }
-            );
+            const formattedTime = new Intl.DateTimeFormat("en-IN", {
+              timeZone: "Asia/Kolkata",
+              day: "2-digit",
+              month: "2-digit",
+              year: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            }).format(new Date(msg.createdAt));
 
             return (
               <div
@@ -132,7 +208,7 @@ export default function ChatApp() {
                 </span>
 
                 <div
-                  className={`px-2 py-1 max-w-xs rounded-lg shadow-md text-white ${
+                  className={`px-2 py-1 max-w-xs rounded-lg text-lg shadow-md text-white ${
                     msg.sender === sender
                       ? msg.isRead
                         ? "bg-green-500"

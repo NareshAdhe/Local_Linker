@@ -1,48 +1,38 @@
 import Logo from "../assets/Local_Linker_Logo.png";
 import { Link, NavLink } from "react-router-dom";
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { AppContext } from "../context/Context";
 import { useNavigate } from "react-router-dom";
 import { CgProfile } from "react-icons/cg";
 import { FaUser } from "react-icons/fa";
 import { TbLogout } from "react-icons/tb";
+import { BsChatDots } from "react-icons/bs"; // ✅ Import Chat Icon
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { CiSearch } from "react-icons/ci";
+import { IoMdNotificationsOutline } from "react-icons/io";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
-  const { backendURI, setLoggedIn, loggedIn } = useContext(AppContext);
+  const { backendURI, setLoggedIn, loggedIn, unreadUsers } = useContext(AppContext);
 
   const handleLogout = async () => {
     try {
       const url = backendURI + "/api/auth/logout";
-      const response = await axios.post(
-        url,
-        {},
-        {
-          withCredentials: true,
-        }
-      );
+      const response = await axios.post(url, {}, { withCredentials: true });
 
       if (response.data.success) {
         setLoggedIn(false);
         navigate("/");
         localStorage.removeItem("authToken");
-        toast.success(response.data.message, {
-          autoClose: 2000,
-        });
+        toast.success(response.data.message, { autoClose: 2000 });
       } else {
-        toast.error(response.data.message, {
-          autoClose: 2000,
-        });
+        toast.error(response.data.message, { autoClose: 2000 });
       }
     } catch (error) {
-      toast.error(error.message, {
-        autoClose: 2000,
-      });
+      toast.error(error.message, { autoClose: 2000 });
     }
   };
 
@@ -55,7 +45,8 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="flex justify-between items-center py-4 text-white">
+    <nav className="flex justify-between items-center py-4 text-white w-full">
+      {/* Logo & Brand */}
       <Link to={"/"} className="flex items-center gap-2">
         <img
           src={Logo}
@@ -68,33 +59,47 @@ const Navbar = () => {
       </Link>
 
       <ul className="flex gap-10 text-lg font-semibold">
-        {[
-          "Home",
-          "About",
-          "Features",
-          "Reels",
-          ...(loggedIn ? ["Contact"] : []),
-        ].map((item, index) => (
-          <NavLink
-            key={index}
-            to={routes[item]}
-            className={({ isActive }) =>
-              isActive
-                ? "text-[#80B538] font-bold tracking-wide transition duration-300 cursor-pointer"
-                : "text-[#333] hover:text-[#929194] font-bold tracking-wide transition duration-300 cursor-pointer"
-            }
-          >
-            {item}
-          </NavLink>
-        ))}
+        {["Home", "About", "Features", "Reels", ...(loggedIn ? ["Contact"] : [])].map(
+          (item, index) => (
+            <NavLink
+              key={index}
+              to={routes[item]}
+              className={({ isActive }) =>
+                isActive
+                  ? "text-[#80B538] font-bold tracking-wide transition duration-300 cursor-pointer"
+                  : "text-[#333] hover:text-[#929194] font-bold tracking-wide transition duration-300 cursor-pointer"
+              }
+            >
+              {item}
+            </NavLink>
+          )
+        )}
       </ul>
 
-      <div className="flex items-center gap-8">
+      <div className="flex items-start gap-5 justify-center">
         {loggedIn && (
           <Link to={"/search"} className="text-black text-4xl">
             <CiSearch />
           </Link>
         )}
+
+        {loggedIn && (
+          <Link to={"/chats"} className="text-black text-4xl relative cursor-pointer">
+            <BsChatDots />
+          </Link>
+        )}
+
+        {loggedIn && (
+          <Link className="relative" to={"/unread"}>
+            <IoMdNotificationsOutline className="text-black text-4xl cursor-pointer" />
+            {unreadUsers.length > 0 && (
+              <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 rounded-full flex justify-center items-center text-[12px]">
+                {unreadUsers.length}
+              </span>
+            )}
+          </Link>
+        )}
+
         {!loggedIn ? (
           <Link
             to={"/login"}

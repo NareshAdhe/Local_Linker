@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import { FaArrowRight } from "react-icons/fa";
 
 const Home = () => {
+
   return (
     <div className="relative w-full h-fit items-center justify-center my-20 mx-auto max-w-screen-2xl">
       <div className="flex flex-col md:flex-row w-full gap-8">
-        {/* Left Content */}
         <div className="md:w-1/2 text-left space-y-6">
           <h1 className="text-5xl md:text-6xl font-bold leading-snug text-gray-900">
             Unlock the Power of <br />

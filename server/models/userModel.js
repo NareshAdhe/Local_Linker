@@ -11,6 +11,8 @@ const userSchema = new Schema(
     resetOtpExpiry: { type: Number, default: 0 },
     location: { type: String, default: "", trim: true },
     number: { type: String, trim: true, maxlength: 10 },
+    isOnline: { type: Boolean, default: false},
+    lastSeen: {type: Date},
     role: {
       type: String,
       required: true,

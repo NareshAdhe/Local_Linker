@@ -1,5 +1,7 @@
 import User, { Businessman, Influencer } from "../models/userModel.js";
 import multer from "multer";
+import redis from "../config/redis.js";
+import Message from "../models/messageModel.js";
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage }).single("profileImage");
@@ -58,7 +60,15 @@ export const saveProfileImage = async (req, res) => {
 
 export const getOtherUser = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
+    const { id } = req.params;
+    const cachedUser = await redis.get(`user:${id}`);
+    if (cachedUser) {
+      return res.json({
+        success: true,
+        user: JSON.parse(cachedUser),
+      });
+    }
+    const user = await User.findById(id);
     if (!user) {
       return res.json({ message: "User not found" });
     }
@@ -68,6 +78,55 @@ export const getOtherUser = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error });
+  }
+};
+
+export const getUsers = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const cachedUsers = await redis.get(`users:${userId}`);
+    if (cachedUsers) {
+      return res.json({
+        success: true,
+        users: JSON.parse(cachedUsers),
+      });
+    }
+    let query = { _id: { $ne: userId } };
+    const users = await User.find(query).select("-password");
+    await redis.set(`users:${userId}`, JSON.stringify(users), "EX", 600);
+    res.json({
+      success: true,
+      users,
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+export const getUsersByCity = async (req, res) => {
+  try {
+    const { location } = req.params;
+
+    if (!location) {
+      return res.status(400).json({ message: "Location is required" });
+    }
+
+    console.log("Fetching influencers for location:", location);
+    const Users = await User.find({
+      location: { $regex: location, $options: "i" },
+    });
+
+    if (Users.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No influencers found for this location" });
+    }
+
+    res.json({ success: true, Users });
+  } catch (error) {
+    res.json({ success: false, message: "Server Error" });
   }
 };
 
@@ -120,7 +179,9 @@ export const updateUser = async (req, res) => {
 
     await updatedUser.save();
 
-    return res.status(200).json({
+    await redis.set(`user:${userId}`, JSON.stringify(updatedUser), "EX", 600);
+
+    return res.json({
       success: true,
       message: "Profile updated successfully",
       user: updatedUser,
@@ -130,61 +191,60 @@ export const updateUser = async (req, res) => {
   }
 };
 
-export const getUsers = async (req, res) => {
-  try {
-    const { userId } = req.body;
-
-    let query = { _id: { $ne: userId } };
-    const users = await User.find(query).select("-password");
-
-    res.json({
-      success: true,
-      users,
-    });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ success: false, message: "Internal Server Error" });
-  }
-};
-
-export const getUsersByCity = async (req, res) => {
-  try {
-    const { location } = req.params;
-
-    if (!location) {
-      return res.status(400).json({ message: "Location is required" });
-    }
-
-    console.log("Fetching influencers for location:", location);
-    const Users = await User.find({
-      location: { $regex: location, $options: "i" },
-    });
-
-    if (Users.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No influencers found for this location" });
-    }
-
-    res.json({ success: true, Users });
-  } catch (error) {
-    res.json({ success: false, message: "Server Error" });
-  }
-};
-
 export const profile = async (req, res) => {
   try {
     const { userId } = req.body;
+    const cachedUser = await redis.get(`user:${userId}`);
+    if (cachedUser) {
+      return res.json({
+        success: true,
+        user: JSON.parse(cachedUser),
+      });
+    }
     const user = await User.findById(userId).select("-password");
     if (!user) {
       return res.json({ success: false, message: "User not found" });
     }
+    await redis.set(`user:${userId}`, JSON.stringify(user), "EX", 600);
     res.json({
       success: true,
       user,
     });
   } catch (error) {
     return res.json({ success: false, message: error });
+  }
+};
+
+export const chatHistory = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const chatUsers = await Message.aggregate([
+      {
+        $match: {
+          $or: [{ sender: userId }, { receiver: userId }],
+        },
+      },
+      {
+        $project: {
+          chatUser: {
+            $cond: {
+              if: { $eq: ["$sender", userId] },
+              then: "$receiver",
+              else: "$sender",
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$chatUser",
+        },
+      },
+    ]);
+    const userIds = chatUsers.map((u) => u._id);
+    res.json({ success: true, users: userIds });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };
