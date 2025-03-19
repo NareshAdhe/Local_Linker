@@ -86,9 +86,13 @@ const Context = ({ children }) => {
   }, [socket, users]);
 
   useEffect(() => {
-    const newSocket = io(backendURI, {
-      withCredentials: true,
-    });
+    const newSocket = io(
+      backendURI || "http://localhost:4000",
+      {
+        withCredentials: true,
+        transports: ["websocket", "polling"],
+      }
+    );
 
     setSocket(newSocket);
 
