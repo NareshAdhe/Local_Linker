@@ -10,6 +10,7 @@ const initSocket = (server) => {
       credentials: true,
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     },
+    transports: ["websocket", "polling"],
   });
 
   io.on("connection", (socket) => {
