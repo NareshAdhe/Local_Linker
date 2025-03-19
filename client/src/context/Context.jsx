@@ -19,22 +19,6 @@ const Context = ({ children }) => {
   const [chatUsers, setChatUsers] = useState([]);
 
   useEffect(() => {
-    const newSocket = io(
-      backendURI || "http://localhost:4000",
-      {
-        withCredentials: true,
-        transports: ["websocket", "polling"],
-      }
-    );
-
-    setSocket(newSocket);
-
-    return () => {
-      newSocket.disconnect();
-    };
-  }, [backendURI]);
-
-  useEffect(() => {
     const fetchChatUsers = async () => {
       try {
         const { data } = await axios.get(
@@ -100,6 +84,22 @@ const Context = ({ children }) => {
       socket.off("updateChatUsers");
     };
   }, [socket, users]);
+
+  useEffect(() => {
+    const newSocket = io(
+      backendURI || "http://localhost:4000",
+      {
+        withCredentials: true,
+        transports: ["websocket", "polling"],
+      }
+    );
+
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     if (localStorage.getItem("authToken")) {
