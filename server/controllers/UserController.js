@@ -84,16 +84,8 @@ export const getOtherUser = async (req, res) => {
 export const getUsers = async (req, res) => {
   try {
     const { userId } = req.body;
-    const cachedUsers = await redis.get(`users:${userId}`);
-    if (cachedUsers) {
-      return res.json({
-        success: true,
-        users: JSON.parse(cachedUsers),
-      });
-    }
     let query = { _id: { $ne: userId } };
     const users = await User.find(query).select("-password");
-    await redis.set(`users:${userId}`, JSON.stringify(users), "EX", 600);
     res.json({
       success: true,
       users,

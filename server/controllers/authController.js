@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import userModel from "../models/userModel.js";
 import validator from "validator";
 import transporter from "../config/transporter.js";
+import {io} from "../server.js";
 
 export const register = async (req, res) => {
   const { name, email, password, role } = req.body;
@@ -414,7 +415,6 @@ export const verifyOtp = async (req, res) => {
     };
 
     await transporter.sendMail(mailOptions);
-
     res.json({
       success: true,
       message: "Logged in successfully",
@@ -866,50 +866,6 @@ export const getUser = async (req, res) => {
     res.json({
       success: true,
       user,
-    });
-  } catch (error) {
-    res.json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
-
-export const updatePassword = async (req, res) => {
-  const { userId, oldPassword, newPassword } = req.body;
-  try {
-    const user = await userModel.findById(userId);
-    if (!user) {
-      return res.json({
-        success: false,
-        message: "User not found",
-      });
-    }
-    const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
-    if (isPasswordValid) {
-      return res.json({
-        success: false,
-        message: "Incorrect old password",
-      });
-    }
-    if (oldPassword === newPassword) {
-      return res.json({
-        success: false,
-        message: "New password cannot be same as old password",
-      });
-    }
-    if (newPassword.length < 8) {
-      return res.json({
-        success: false,
-        message: "Password must be at least 8 characters long",
-      });
-    }
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    user.password = hashedPassword;
-    await user.save();
-    return res.json({
-      success: true,
-      message: "Password updated successfully",
     });
   } catch (error) {
     res.json({

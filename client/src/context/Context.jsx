@@ -42,7 +42,9 @@ const Context = ({ children }) => {
 
   useEffect(() => {
     if (!socket || !users.length) return;
-
+    socket.on("updateUsers",(users) => {
+      setUsers(users);
+    })
     socket.on("updateChatUsers", (user) => {
       setChatUsers((prevChatUsers) => {
         if (!prevChatUsers.includes(user)) {
@@ -50,7 +52,7 @@ const Context = ({ children }) => {
         }
         return prevChatUsers;
       });
-    });
+    })
 
     socket.on("unReadMessages", (groupedMessages) => {
       const unreadUserData = Object.entries(groupedMessages)

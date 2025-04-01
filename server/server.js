@@ -13,7 +13,7 @@ dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
-const io = initSocket(server);
+export const io = initSocket(server);
 
 app.use(cookieParser());
 app.use(
