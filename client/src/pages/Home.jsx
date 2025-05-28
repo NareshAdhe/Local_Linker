@@ -1,5 +1,6 @@
-import React, { useContext, useEffect } from "react";
+import React from "react";
 import { FaArrowRight } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const Home = () => {
 
@@ -18,12 +19,12 @@ const Home = () => {
             with the digital world.
           </p>
           <div className="flex gap-6 mt-8">
-            <button className="px-8 py-4 bg-[#80B538] text-white font-semibold rounded-md flex items-center gap-3 shadow-lg transition-transform transform hover:scale-105 hover:shadow-xl">
+            <Link to={"/features"} className=" cursor-pointer px-8 py-4 bg-[#80B538] text-white font-semibold rounded-md flex items-center gap-3 shadow-lg transition-transform transform hover:scale-105 hover:shadow-xl">
               Get Started <FaArrowRight />
-            </button>
-            <button className="px-8 py-4 border border-gray-700 text-gray-800 font-semibold rounded-md bg-white shadow-lg transition-transform transform hover:scale-105 hover:bg-gray-100">
+            </Link>
+            <Link to={"/about"} className="cursor-pointer px-8 py-4 border border-gray-700 text-gray-800 font-semibold rounded-md bg-white shadow-lg transition-transform transform hover:scale-105 hover:bg-gray-100">
               Explore Plans
-            </button>
+            </Link>
           </div>
         </div>
 

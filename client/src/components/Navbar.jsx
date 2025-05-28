@@ -54,7 +54,7 @@ const Navbar = () => {
           className="w-16 aspect-square p-1 rounded-full"
         />
         <h1 className="text-2xl font-extrabold text-black tracking-wider">
-          LocalLinker
+          LocalLinker Jenkins
         </h1>
       </Link>
 
