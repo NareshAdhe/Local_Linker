@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: local-linker-backend-config
+  namespace: local-linker
+data:
+  PORT: "4000"
+  NODE_ENV: "development"
+  SENDER_MAIL: "locallinker25@gmail.com"
+  FRONTEND_URL: "http://local-linker.com:5000"
+  REDIS_HOST: "local-linker-redis-service"

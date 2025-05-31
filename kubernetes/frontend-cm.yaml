@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: local-linker-frontend-config
+  namespace: local-linker
+data:
+  VITE_REACT_APP_BACKEND_BASE_URL: "http://local-linker.com:5000"

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: local-linker-frontend-service
+  namespace: local-linker
+spec:
+  selector:
+    app: local-linker-frontend
+  type: NodePort
+  ports:
+  - port: 5173
+    targetPort: 5173

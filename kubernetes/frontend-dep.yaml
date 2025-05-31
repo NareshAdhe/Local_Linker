@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: local-linker-frontend
+  namespace: local-linker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: local-linker-frontend
+  template:
+    metadata:
+      labels:
+        app: local-linker-frontend
+    spec:
+      containers:
+        - name: local-linker-frontend-1
+          image: nareshdockerclient/local-linker-frontend:latest
+          ports:
+            - containerPort: 5173
+          envFrom:
+            - configMapRef:
+                name: local-linker-frontend-config

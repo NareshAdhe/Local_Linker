@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: local-linker-redis
+  namespace: local-linker
+spec:
+  selector:
+    matchLabels:
+      app: local-linker-redis
+  template:
+    metadata:
+      labels:
+        app: local-linker-redis
+    spec:
+      containers:
+      - name: local-linker-redis-1
+        image: redis:7
+        ports:
+          - containerPort: 6379
