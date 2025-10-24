@@ -8,12 +8,8 @@ import userRouter from "./routes/UserRoutes.js";
 import chatRouter from "./routes/chatRoutes.js";
 import initSocket from "./config/socket.js";
 import http from "http";
-import { validateEnv } from "./config/validateEnv.js";
 
 dotenv.config();
-
-// Validate environment variables before starting
-validateEnv();
 
 const app = express();
 const server = http.createServer(app);
