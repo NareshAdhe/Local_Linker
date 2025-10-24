@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "npx nodemon server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "build": "echo 'No build required'"
   },
   "keywords": [],
   "author": "",
