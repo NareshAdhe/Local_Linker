@@ -171,7 +171,7 @@ export const updateUser = async (req, res) => {
 
     await updatedUser.save();
 
-    await redis.set(`user:${userId}`, JSON.stringify(updatedUser), "EX", 600);
+    await redis.set(`user:${userId}`, JSON.stringify(updatedUser), { ex: 600 });
 
     return res.json({
       success: true,
@@ -197,7 +197,7 @@ export const profile = async (req, res) => {
     if (!user) {
       return res.json({ success: false, message: "User not found" });
     }
-    await redis.set(`user:${userId}`, JSON.stringify(user), "EX", 600);
+    await redis.set(`user:${userId}`, JSON.stringify(user), { ex: 600 });
     res.json({
       success: true,
       user,
