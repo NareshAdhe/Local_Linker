@@ -8,8 +8,12 @@ import userRouter from "./routes/UserRoutes.js";
 import chatRouter from "./routes/chatRoutes.js";
 import initSocket from "./config/socket.js";
 import http from "http";
+import { validateEnv } from "./config/validateEnv.js";
 
 dotenv.config();
+
+// Validate environment variables before starting
+validateEnv();
 
 const app = express();
 const server = http.createServer(app);
@@ -40,7 +44,11 @@ app.use((req, res, next) => {
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
-connectDB();
+// Connect to MongoDB
+connectDB().catch((err) => {
+  console.error("❌ Failed to connect to MongoDB:", err);
+  process.exit(1);
+});
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
@@ -67,6 +75,10 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 4000;
-server.listen(PORT, '0.0.0.0' ,() => {
-  console.log(`App running at http://localhost:${PORT}...`);
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`✅ Server running on port ${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV}`);
+}).on('error', (err) => {
+  console.error('❌ Server failed to start:', err);
+  process.exit(1);
 });
