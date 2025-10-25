@@ -11,7 +11,6 @@ const authMiddleware = async (req, res, next) => {
     const decoded = jwt.verify(req.cookies.token, process.env.JWT_SECRET);
     req.body.email = decoded.email;
     req.body.userId = decoded.userId;
-    console.log("Auth Middleware invoked")
     next();
   } catch (error) {
     res.json({
