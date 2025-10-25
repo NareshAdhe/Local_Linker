@@ -456,6 +456,7 @@ export const logout = async (req, res) => {
 
 export const sendOtp = async (req, res) => {
   const { email } = req.body;
+  console.log("Request for otp received");
   try {
     const user = await userModel.findOne({ email });
     const otp = String(Math.floor(Math.random() * 9000 + 1000));
