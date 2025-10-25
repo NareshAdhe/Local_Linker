@@ -19,15 +19,19 @@ const initSocket = (server) => {
     socket.on("join", async (userId) => {
       if (!userId) return;
 
-      await redis.sadd(`userSockets:${userId}`, socket.id);
-      await redis.set(`socketUser:${socket.id}`, userId);
+      try {
+        await redis.sadd(`userSockets:${userId}`, socket.id);
+        await redis.set(`socketUser:${socket.id}`, userId);
 
-      await User.findByIdAndUpdate(userId, { isOnline: true });
-      io.emit("online", userId);
+        await User.findByIdAndUpdate(userId, { isOnline: true });
+        io.emit("online", userId);
 
-      const userUnReadCnt = await redis.hgetall(`unReadCount:${userId}`);
-      if (Object.keys(userUnReadCnt).length > 0) {
-        io.to(socket.id).emit("unReadMessages", userUnReadCnt);
+        const userUnReadCnt = await redis.hgetall(`unReadCount:${userId}`);
+        if (userUnReadCnt && Object.keys(userUnReadCnt).length > 0) {
+          io.to(socket.id).emit("unReadMessages", userUnReadCnt);
+        }
+      } catch (error) {
+        console.error("Error in join event:", error);
       }
     });
 
@@ -41,8 +45,8 @@ const initSocket = (server) => {
 
         const receiverSocketIds = await redis.smembers(
           `userSockets:${receiver}`
-        );
-        const senderSocketIds = await redis.smembers(`userSockets:${sender}`);
+        ) || [];
+        const senderSocketIds = await redis.smembers(`userSockets:${sender}`) || [];
 
         if (receiverSocketIds.length > 0) {
           const isChatOpened = await redis.get(`chat:${receiver}:${sender}`);
@@ -94,7 +98,7 @@ const initSocket = (server) => {
         await redis.set(`chat:${sender}:${receiver}`, "true");
         await redis.hdel(`unReadCount:${sender}`, receiver);
 
-        const senderSocketIds = await redis.smembers(`userSockets:${sender}`);
+        const senderSocketIds = await redis.smembers(`userSockets:${sender}`) || [];
         senderSocketIds.forEach((socketId) => {
           io.to(socketId).emit("updateUnreadCount", {
             sender: receiver,
@@ -116,7 +120,7 @@ const initSocket = (server) => {
 
         const receiverSocketIds = await redis.smembers(
           `userSockets:${receiver}`
-        );
+        ) || [];
 
         receiverSocketIds.forEach((socketId) => {
           io.to(socketId).emit("getMessages", {
