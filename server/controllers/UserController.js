@@ -61,23 +61,31 @@ export const saveProfileImage = async (req, res) => {
 export const getOtherUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const cachedUser = await redis.get(`user:${id}`);
-    if (cachedUser) {
-      return res.json({
-        success: true,
-        user: JSON.parse(cachedUser),
-      });
+    
+    // Try to get from cache
+    try {
+      const cachedUser = await redis.get(`user:${id}`);
+      if (cachedUser) {
+        return res.json({
+          success: true,
+          user: JSON.parse(cachedUser),
+        });
+      }
+    } catch (cacheError) {
+      console.error('Redis cache error in getOtherUser:', cacheError);
     }
+    
     const user = await User.findById(id);
     if (!user) {
-      return res.json({ message: "User not found" });
+      return res.json({ success: false, message: "User not found" });
     }
     return res.json({
       success: true,
       user,
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error });
+    console.error('Error in getOtherUser:', error);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -171,7 +179,12 @@ export const updateUser = async (req, res) => {
 
     await updatedUser.save();
 
-    await redis.set(`user:${userId}`, JSON.stringify(updatedUser), { ex: 600 });
+    try {
+      await redis.set(`user:${userId}`, JSON.stringify(updatedUser), { ex: 600 });
+    } catch (cacheError) {
+      console.error('Redis cache error in updateProfile:', cacheError);
+      // Continue even if cache fails
+    }
 
     return res.json({
       success: true,
@@ -186,18 +199,34 @@ export const updateUser = async (req, res) => {
 export const profile = async (req, res) => {
   try {
     const { userId } = req.body;
-    const cachedUser = await redis.get(`user:${userId}`);
-    if (cachedUser) {
-      return res.json({
-        success: true,
-        user: JSON.parse(cachedUser),
-      });
+    
+    // Try cache first
+    try {
+      const cachedUser = await redis.get(`user:${userId}`);
+      if (cachedUser) {
+        return res.json({
+          success: true,
+          user: JSON.parse(cachedUser),
+        });
+      }
+    } catch (cacheError) {
+      console.error('Redis cache error in profile:', cacheError);
+      // Continue to DB fetch
     }
+    
     const user = await User.findById(userId).select("-password");
     if (!user) {
       return res.json({ success: false, message: "User not found" });
     }
-    await redis.set(`user:${userId}`, JSON.stringify(user), { ex: 600 });
+    
+    // Try to cache the result
+    try {
+      await redis.set(`user:${userId}`, JSON.stringify(user), { ex: 600 });
+    } catch (cacheError) {
+      console.error('Redis cache set error in profile:', cacheError);
+      // Continue even if caching fails
+    }
+    
     res.json({
       success: true,
       user,
