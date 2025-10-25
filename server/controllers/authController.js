@@ -282,7 +282,7 @@ export const login = async (req, res) => {
 };
 
 export const verifyOtp = async (req, res) => {
-  const { email, otp2 } = req.body;
+  const { email, otp } = req.body;
 
   try {
     const user = await userModel.findOne({ email });
@@ -299,7 +299,7 @@ export const verifyOtp = async (req, res) => {
         message: "OTP has expired",
       });
     }
-    const isOtpValid = await bcrypt.compare(otp2, user.loginOtp);
+    const isOtpValid = await bcrypt.compare(otp, user.loginOtp);
     if (!isOtpValid) {
       return res.json({
         success: false,
@@ -409,7 +409,7 @@ export const verifyOtp = async (req, res) => {
 
     const mailOptions = {
       from: `"LocalLinker" ${process.env.SENDER_MAIL}`,
-      to: user.email,
+      to: email,
       subject: `${userName} 😊 Welcome to LocalLinker – We're Excited to Have You!`,
       html: htmlContent,
     };
