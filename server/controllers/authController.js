@@ -282,8 +282,8 @@ export const login = async (req, res) => {
 };
 
 export const verifyOtp = async (req, res) => {
-  const { email, otp } = req.body;
-  console.log(email,otp)
+  const { email, otp2 } = req.body;
+  console.log(email,otp2)
   try {
     const user = await userModel.findOne({ email });
 
@@ -299,7 +299,7 @@ export const verifyOtp = async (req, res) => {
         message: "OTP has expired",
       });
     }
-    const isOtpValid = await bcrypt.compare(otp, user.loginOtp);
+    const isOtpValid = await bcrypt.compare(otp2, user.loginOtp);
     if (!isOtpValid) {
       return res.json({
         success: false,
