@@ -20,6 +20,8 @@ const Context = ({ children }) => {
 
   useEffect(() => {
     const fetchChatUsers = async () => {
+      if (!user?._id) return;
+      
       try {
         const { data } = await axios.get(
           `${backendURI}/api/user/chat-users/${user._id}`,
@@ -28,6 +30,7 @@ const Context = ({ children }) => {
           }
         );
         if (data.success) {
+          console.log('📋 Fetched chat users:', data.users);
           setChatUsers(data.users);
         } else {
           toast.error(data.message, { autoClose: 2000 });
@@ -37,19 +40,23 @@ const Context = ({ children }) => {
       }
     };
 
-    if (loggedIn && user) fetchChatUsers();
-  }, [loggedIn, user]);
+    if (loggedIn && user._id) fetchChatUsers();
+  }, [loggedIn, user._id, backendURI]);
 
   useEffect(() => {
     if (!socket || !users.length) return;
     socket.on("updateUsers",(users) => {
       setUsers(users);
     })
-    socket.on("updateChatUsers", (user) => {
+    socket.on("updateChatUsers", (userId) => {
+      console.log('🔄 updateChatUsers event received for userId:', userId);
       setChatUsers((prevChatUsers) => {
-        if (!prevChatUsers.includes(user)) {
-          return [...prevChatUsers, user];
+        console.log('Previous chatUsers:', prevChatUsers);
+        if (!prevChatUsers.includes(userId)) {
+          console.log('Adding new user to chatUsers:', userId);
+          return [...prevChatUsers, userId];
         }
+        console.log('User already in chatUsers');
         return prevChatUsers;
       });
     })

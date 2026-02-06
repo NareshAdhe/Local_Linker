@@ -180,7 +180,7 @@ export const updateUser = async (req, res) => {
     await updatedUser.save();
 
     try {
-      await redis.set(`user:${userId}`, JSON.stringify(updatedUser), { ex: 600 });
+      await redis.set(`user:${userId}`, JSON.stringify(updatedUser), { EX: 600 });
     } catch (cacheError) {
       console.error('Redis cache error in updateProfile:', cacheError);
       // Continue even if cache fails
@@ -221,7 +221,7 @@ export const profile = async (req, res) => {
     
     // Try to cache the result
     try {
-      await redis.set(`user:${userId}`, JSON.stringify(user), { ex: 600 });
+      await redis.set(`user:${userId}`, JSON.stringify(user), { EX: 600 });
     } catch (cacheError) {
       console.error('Redis cache set error in profile:', cacheError);
       // Continue even if caching fails
@@ -263,9 +263,12 @@ export const chatHistory = async (req, res) => {
         },
       },
     ]);
+    
     const userIds = chatUsers.map((u) => u._id);
+    console.log(`📋 Chat history for user ${userId}:`, userIds);
     res.json({ success: true, users: userIds });
   } catch (error) {
+    console.error('Error in chatHistory:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };

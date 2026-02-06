@@ -7,7 +7,13 @@ const ChatHistory = () => {
   const [filteredChatUsers, setFilteredChatUsers] = useState([]);
 
   useEffect(() => {
-    setFilteredChatUsers(users.filter((user) => chatUsers?.includes(user._id)));
+    console.log('📊 ChatHistory - chatUsers (IDs):', chatUsers);
+    console.log('📊 ChatHistory - users (full objects):', users.length);
+    
+    const filtered = users.filter((user) => chatUsers?.includes(user._id));
+    console.log('📊 ChatHistory - filtered users:', filtered.length, filtered.map(u => ({ id: u._id, name: u.name })));
+    
+    setFilteredChatUsers(filtered);
   }, [users, chatUsers]);
 
   return (

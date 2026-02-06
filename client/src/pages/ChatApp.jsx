@@ -24,17 +24,26 @@ export default function ChatApp() {
         );
 
         if (data.success) {
+          let formattedLastSeen = null;
+          if (data.user.lastSeen) {
+            try {
+              formattedLastSeen = new Intl.DateTimeFormat("en-IN", {
+                timeZone: "Asia/Kolkata",
+                day: "2-digit",
+                month: "2-digit",
+                year: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+              }).format(new Date(data.user.lastSeen));
+            } catch (dateError) {
+              console.error('Error formatting lastSeen:', dateError);
+            }
+          }
+          
           setReceiver({
             ...data.user,
-            lastSeen: new Intl.DateTimeFormat("en-IN", {
-              timeZone: "Asia/Kolkata",
-              day: "2-digit",
-              month: "2-digit",
-              year: "2-digit",
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: true,
-            }).format(new Date(data.user.lastSeen)),
+            lastSeen: formattedLastSeen,
           });
         } else {
           toast.error(data.message, { autoClose: 2000 });
