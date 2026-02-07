@@ -29,7 +29,7 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
 // Connect to MongoDB
 connectDB().catch((err) => {
-  console.error("❌ Failed to connect to MongoDB:", err);
+  console.error("Failed to connect to MongoDB:", err);
   process.exit(1);
 });
 
@@ -59,9 +59,9 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV}`);
 }).on('error', (err) => {
-  console.error('❌ Server failed to start:', err);
+  console.error('Server failed to start:', err);
   process.exit(1);
 });

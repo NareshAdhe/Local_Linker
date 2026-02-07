@@ -13,14 +13,12 @@ const redis =
         port: process.env.REDIS_PORT || 6379,
       });
 
-if (process.env.NODE_ENV === "production") {
-  console.log("✅ Redis client initialized with Upstash REST API");
-} else {
+if (process.env.NODE_ENV === "development") {
   redis.on("connect", () => {
-    console.log("✅ Connected to local Redis");
+    console.log("Connected to local Redis");
   });
   redis.on("error", (err) => {
-    console.error("❌ Local Redis connection error:", err);
+    console.error("Local Redis connection error:", err);
   });
 }
 

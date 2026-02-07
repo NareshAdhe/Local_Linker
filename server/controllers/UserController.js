@@ -265,7 +265,7 @@ export const chatHistory = async (req, res) => {
     ]);
     
     const userIds = chatUsers.map((u) => u._id);
-    console.log(`📋 Chat history for user ${userId}:`, userIds);
+    console.log(`Chat history for user ${userId}:`, userIds);
     res.json({ success: true, users: userIds });
   } catch (error) {
     console.error('Error in chatHistory:', error);

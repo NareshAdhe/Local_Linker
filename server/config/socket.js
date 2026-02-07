@@ -14,7 +14,7 @@ const initSocket = (server) => {
   });
 
   io.on("connection", (socket) => {
-    console.log(`🔗 New connection: ${socket.id}`);
+    console.log(`New connection: ${socket.id}`);
 
     socket.on("join", async (userId) => {
       if (!userId) return;
@@ -76,7 +76,7 @@ const initSocket = (server) => {
           });
         } else {
           console.log(
-            "📡 Receiver is offline, message will be delivered later."
+            "Receiver is offline!"
           );
           await redis.hincrby(`unReadCount:${receiver}`, sender, 1);
         }
@@ -88,13 +88,13 @@ const initSocket = (server) => {
           }
         );
       } catch (error) {
-        console.error("❌ Error in sendMessage event:", error);
+        console.error("Error in sendMessage event:", error.message);
       }
     });
 
     socket.on("chatJoined", async ({ sender, receiver }) => {
       try {
-        console.log("📩 Chat joined:", sender, receiver);
+        console.log("Chat joined:", sender, receiver);
         await redis.set(`chat:${sender}:${receiver}`, "true");
         await redis.hdel(`unReadCount:${sender}`, receiver);
 
@@ -136,7 +136,7 @@ const initSocket = (server) => {
           io.to(socket.id).emit("online", receiver);
         }
       } catch (error) {
-        console.error("❌ Error in chatJoined event:", error);
+        console.error("Error in chatJoined event:", error);
       }
     });
 
@@ -144,7 +144,7 @@ const initSocket = (server) => {
       try {
         await redis.del(`chat:${sender}:${receiver}`);
       } catch (error) {
-        console.error("❌ Error in leaveChat event:", error);
+        console.error("Error in leaveChat event:", error);
       }
     });
 
@@ -154,7 +154,7 @@ const initSocket = (server) => {
 
         if (userId) {
           console.log(
-            `🔴 User disconnected: ${userId} (Socket ID: ${socket.id})`
+            `User disconnected: ${userId} (Socket ID: ${socket.id})`
           );
 
           await redis.srem(`userSockets:${userId}`, socket.id);
@@ -168,13 +168,15 @@ const initSocket = (server) => {
           });
           io.emit("offline", { userId, isOnline: false, lastSeen: date });
         } else {
-          console.log(`�� Socket disconnected: ${socket.id} (No user found)`);
+          console.log(`Socket disconnected: ${socket.id} (No user found)`);
         }
       } catch (error) {
-        console.error("❌ Error handling disconnect:", error);
+        console.error("Error handling disconnect:", error);
       }
     });
   });
+
+  console.log(io);
 
   return io;
 };
