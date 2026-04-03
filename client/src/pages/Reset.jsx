@@ -30,7 +30,7 @@ const Reset = () => {
     try {
       setLoading(true);
       if (!isResetEmailVerified) {
-        const url = backendURI + "/api/auth/checkMail";
+        const url = backendURI + "/auth/checkMail";
         console.log(formData);
         const response = await axios.post(
           url,
@@ -52,7 +52,7 @@ const Reset = () => {
           });
         }
       } else {
-        const url = backendURI + "/api/auth/reset";
+        const url = backendURI + "/auth/reset";
         const response = await axios.post(url, formData, {
           withCredentials: true,
         });

@@ -65,8 +65,8 @@ const VerifyOTP = () => {
     }
     setIsResendingOtp(true);
     try {
-      let url = backendURI + "/api/auth/resend";
-      if (reset) url = backendURI + "/api/auth/resend-reset";
+      let url = backendURI + "/auth/resend";
+      if (reset) url = backendURI + "/auth/resend-reset";
       const response = await axios.post(
         url,
         {},
@@ -99,7 +99,7 @@ const VerifyOTP = () => {
     try {
       if (reset) {
         setLoading(true);
-        let url = backendURI + "/api/auth/verify-reset";
+        let url = backendURI + "/auth/verify-reset";
         let otp2 = otp.join("");
         const response = await axios.post(
           url,
@@ -123,7 +123,7 @@ const VerifyOTP = () => {
         }
       } else {
         setLoading(true);
-        let url = backendURI + "/api/auth/verify";
+        let url = backendURI + "/auth/verify";
         let otp2 = otp.join("");
         const response = await axios.post(
           url,

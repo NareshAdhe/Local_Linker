@@ -16,7 +16,7 @@ const Search = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get(`${backendURI}/api/user/get`, {
+        const response = await axios.get(`${backendURI}/user/get`, {
           withCredentials: true,
         });
 

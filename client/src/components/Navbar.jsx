@@ -20,7 +20,7 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      const url = backendURI + "/api/auth/logout";
+      const url = backendURI + "/auth/logout";
       const response = await axios.post(url, {}, { withCredentials: true });
 
       if (response.data.success) {

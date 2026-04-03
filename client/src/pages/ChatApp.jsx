@@ -19,8 +19,8 @@ export default function ChatApp() {
 
       try {
         const { data } = await axios.get(
-          `${backendURI}/api/user/otherUser/${receiver}`,
-          { withCredentials: true }
+          `${backendURI}/user/otherUser/${receiver}`,
+          { withCredentials: true },
         );
 
         if (data.success) {
@@ -37,10 +37,10 @@ export default function ChatApp() {
                 hour12: true,
               }).format(new Date(data.user.lastSeen));
             } catch (dateError) {
-              console.error('Error formatting lastSeen:', dateError);
+              console.error("Error formatting lastSeen:", dateError);
             }
           }
-          
+
           setReceiver({
             ...data.user,
             lastSeen: formattedLastSeen,
@@ -62,13 +62,13 @@ export default function ChatApp() {
     socket.emit("chatJoined", { sender, receiver });
 
     const handleNewMessage = (newMsg) => {
-      if((newMsg.receiver === sender) || newMsg.sender === sender){
+      if (newMsg.receiver === sender || newMsg.sender === sender) {
         setMessages((prev) => [...prev, newMsg]);
       }
     };
 
-    const handleGetMessages = ({updatedMessages,newSender}) => {
-      if(newSender === receiver){
+    const handleGetMessages = ({ updatedMessages, newSender }) => {
+      if (newSender === receiver) {
         setMessages(updatedMessages);
       }
     };
@@ -118,8 +118,8 @@ export default function ChatApp() {
 
       try {
         const { data } = await axios.get(
-          `${backendURI}/api/chat/${sender}/${receiver}`,
-          { withCredentials: true }
+          `${backendURI}/chat/${sender}/${receiver}`,
+          { withCredentials: true },
         );
 
         if (data.success) setMessages(data.messages);
@@ -150,10 +150,7 @@ export default function ChatApp() {
   };
 
   useEffect(() => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop =
-        chatContainerRef.current.scrollHeight;
-    }
+    chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
   }, [messages]);
 
   return (

@@ -19,7 +19,7 @@ const OtherUser = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get(`${backendURI}/api/user/otherUser/${id}`, {
+        const response = await axios.get(`${backendURI}/user/otherUser/${id}`, {
           withCredentials: true,
         });
 

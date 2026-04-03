@@ -24,7 +24,7 @@ const Context = ({ children }) => {
       
       try {
         const { data } = await axios.get(
-          `${backendURI}/api/user/chat-users/${user._id}`,
+          `${backendURI}/user/chat-users/${user._id}`,
           {
             withCredentials: true,
           }
@@ -123,7 +123,7 @@ const Context = ({ children }) => {
     const fetchUsers = async () => {
       setIsRefreshing(true);
       try {
-        const response = await axios.get(backendURI + "/api/user/get", {
+        const response = await axios.get(backendURI + "/user/get", {
           withCredentials: true,
         });
 
@@ -149,7 +149,7 @@ const Context = ({ children }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get(`${backendURI}/api/user/profile`, {
+        const response = await axios.get(`${backendURI}/user/profile`, {
           withCredentials: true,
         });
         if (response.data.success) {

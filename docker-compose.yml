@@ -1,0 +1,44 @@
+services:
+  nginx:
+    build: ./client
+    ports:
+      - "80:80"
+    env_file:
+      - ./client/.env
+    depends_on:
+      - backend
+    networks:
+      - app-network
+        
+  backend:
+    build: ./server
+    expose:
+      - "4000"
+    env_file:
+      - ./server/.env
+    depends_on:
+      - mongo
+      - redis
+    networks:
+      - app-network 
+
+  mongo:
+    image: mongo:6
+    container_name: mongo
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - app-network
+  
+  redis:
+    image: redis:7
+    container_name: redis
+    networks:
+      - app-network
+
+volumes:
+  mongo-data:
+
+networks:
+  app-network:
+    driver: bridge

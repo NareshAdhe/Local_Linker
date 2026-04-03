@@ -30,9 +30,9 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    let url = backendURI + "/api/auth/register";
+    let url = backendURI + "/auth/register";
     if (login) {
-      url = backendURI + "/api/auth/login";
+      url = backendURI + "/auth/login";
     }
     setLoading(true);
     try {

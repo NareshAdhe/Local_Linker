@@ -40,7 +40,7 @@ const Profile = () => {
 
     try {
       const response = await axios.post(
-        `${backendURI}/api/user/save-image`,
+        `${backendURI}/user/save-image`,
         formData,
         {
           withCredentials: true,
@@ -112,7 +112,7 @@ const Profile = () => {
 
     try {
       const response = await axios.put(
-        `${backendURI}/api/user/update`,
+        `${backendURI}/user/update`,
         { userId: user.id, ...formData },
         { withCredentials: true }
       );
