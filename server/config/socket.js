@@ -14,7 +14,6 @@ const initSocket = (server) => {
   });
 
   io.on("connection", (socket) => {
-    console.log(`New connection: ${socket.id}`);
 
     socket.on("join", async (userId) => {
       if (!userId) return;
@@ -75,9 +74,6 @@ const initSocket = (server) => {
             io.to(socketId).emit("updateChatUsers", sender);
           });
         } else {
-          console.log(
-            "Receiver is offline!"
-          );
           await redis.hincrby(`unReadCount:${receiver}`, sender, 1);
         }
 
@@ -94,7 +90,6 @@ const initSocket = (server) => {
 
     socket.on("chatJoined", async ({ sender, receiver }) => {
       try {
-        console.log("Chat joined:", sender, receiver);
         await redis.set(`chat:${sender}:${receiver}`, "true");
         await redis.hdel(`unReadCount:${sender}`, receiver);
 
@@ -153,10 +148,6 @@ const initSocket = (server) => {
         const userId = await redis.get(`socketUser:${socket.id}`);
 
         if (userId) {
-          console.log(
-            `User disconnected: ${userId} (Socket ID: ${socket.id})`
-          );
-
           await redis.srem(`userSockets:${userId}`, socket.id);
           await redis.del(`socketUser:${socket.id}`);
 
@@ -167,16 +158,12 @@ const initSocket = (server) => {
             lastSeen: date,
           });
           io.emit("offline", { userId, isOnline: false, lastSeen: date });
-        } else {
-          console.log(`Socket disconnected: ${socket.id} (No user found)`);
         }
       } catch (error) {
         console.error("Error handling disconnect:", error);
       }
     });
   });
-
-  console.log(io);
 
   return io;
 };

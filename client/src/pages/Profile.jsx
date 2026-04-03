@@ -17,7 +17,6 @@ const Profile = () => {
     if (file) {
       const previewURL = URL.createObjectURL(file);
       setNewImage(file);
-      console.log(previewURL);
       setFormData((prev) => ({ ...prev, image: previewURL }));
     }
   };
@@ -64,7 +63,6 @@ const Profile = () => {
 
   useEffect(() => {
     if (user) {
-      console.log(user);
       setLoading(false);
       setFormData((prev) => ({
         ...prev,
@@ -90,7 +88,6 @@ const Profile = () => {
             }
           : {}),
       }));
-      console.log(formData);
     } else setLoading(true);
   }, [user]);
 

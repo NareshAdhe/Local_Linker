@@ -283,7 +283,6 @@ export const login = async (req, res) => {
 
 export const verifyOtp = async (req, res) => {
   const { email, otp2 } = req.body;
-  console.log(email,otp2)
   try {
     const user = await userModel.findOne({ email });
 

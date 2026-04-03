@@ -30,7 +30,6 @@ const Context = ({ children }) => {
           }
         );
         if (data.success) {
-          console.log('📋 Fetched chat users:', data.users);
           setChatUsers(data.users);
         } else {
           toast.error(data.message, { autoClose: 2000 });
@@ -49,14 +48,10 @@ const Context = ({ children }) => {
       setUsers(users);
     })
     socket.on("updateChatUsers", (userId) => {
-      console.log('🔄 updateChatUsers event received for userId:', userId);
       setChatUsers((prevChatUsers) => {
-        console.log('Previous chatUsers:', prevChatUsers);
         if (!prevChatUsers.includes(userId)) {
-          console.log('Adding new user to chatUsers:', userId);
           return [...prevChatUsers, userId];
         }
-        console.log('User already in chatUsers');
         return prevChatUsers;
       });
     })

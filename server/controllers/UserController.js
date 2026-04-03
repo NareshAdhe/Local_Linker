@@ -113,7 +113,6 @@ export const getUsersByCity = async (req, res) => {
       return res.status(400).json({ message: "Location is required" });
     }
 
-    console.log("Fetching influencers for location:", location);
     const Users = await User.find({
       location: { $regex: location, $options: "i" },
     });
@@ -265,7 +264,6 @@ export const chatHistory = async (req, res) => {
     ]);
     
     const userIds = chatUsers.map((u) => u._id);
-    console.log(`Chat history for user ${userId}:`, userIds);
     res.json({ success: true, users: userIds });
   } catch (error) {
     console.error('Error in chatHistory:', error);

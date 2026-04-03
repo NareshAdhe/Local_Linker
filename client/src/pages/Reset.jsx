@@ -31,7 +31,6 @@ const Reset = () => {
       setLoading(true);
       if (!isResetEmailVerified) {
         const url = backendURI + "/auth/checkMail";
-        console.log(formData);
         const response = await axios.post(
           url,
           { email: formData["email"] },

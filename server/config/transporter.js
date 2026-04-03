@@ -22,7 +22,6 @@ const transporter = {
     sendSmtpEmail.to = [{ email: mailOptions.to }];
     
     const response = await apiClient.sendTransacEmail(sendSmtpEmail);
-    console.log('Email sent via Brevo API');
     return response;
   }
 };
