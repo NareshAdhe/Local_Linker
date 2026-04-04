@@ -18,7 +18,7 @@ export const io = initSocket(server);
 app.use(cookieParser());
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost",
+    origin: process.env.FRONTEND_URL || "*",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   })
