@@ -9,6 +9,8 @@ services:
       - backend
     networks:
       - app-network
+    volumes:
+    - /etc/letsencrypt:/etc/letsencrypt:ro
         
   backend:
     build: ./server
