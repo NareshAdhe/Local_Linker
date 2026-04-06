@@ -3,6 +3,7 @@ pipeline{
     stages{
         stage("Clean Workspace"){
             steps{
+                sh "docker system prune -af"
                 deleteDir()
             }
         }
