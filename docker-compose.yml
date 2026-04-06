@@ -23,7 +23,7 @@ services:
       - mongo
       - redis
     networks:
-      - app-network 
+      - app-network
 
   mongo:
     image: mongo:6
