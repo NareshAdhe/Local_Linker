@@ -2,7 +2,7 @@ pipeline{
     agent any;
     stages{
         stage("Clean Workspace"){
-            steps{
+            steps{ 
                 sh "docker system prune -af"
                 deleteDir()
             }
