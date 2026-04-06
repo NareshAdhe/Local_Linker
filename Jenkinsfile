@@ -1,12 +1,6 @@
 pipeline{
     agent any;
     stages{
-        stage("Clean Workspace"){
-            steps{ 
-                sh "docker system prune -af"
-                deleteDir()
-            }
-        }
         stage("Code Fetch from Github"){
             steps{
                 git url:"https://github.com/NareshAdhe/Local_Linker", branch:"main"
@@ -31,7 +25,7 @@ pipeline{
                 withCredentials([
                     usernamePassword(credentialsId: "DockerHubCreds", usernameVariable: "DockerHubUser", passwordVariable: "DockerHubPass")]){
                     sh '''
-                    echo "$DockerHubPass" | docker login -u "$DockerHubUser" --password-stdin
+                    docker login -u "$DockerHubUser" -p "$DockerHubPass"
                     SHORT_COMMIT=$(echo $GIT_COMMIT | cut -c1-7)
                     docker build -t $DockerHubUser/local-linker-frontend:latest -t $DockerHubUser/local-linker-frontend:commit-$SHORT_COMMIT -t $DockerHubUser/local-linker-frontend:build-$BUILD_NUMBER ./client
                     docker build -t $DockerHubUser/local-linker-backend:latest -t $DockerHubUser/local-linker-backend:commit-$SHORT_COMMIT -t $DockerHubUser/local-linker-backend:build-$BUILD_NUMBER ./server
