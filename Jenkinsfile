@@ -44,7 +44,7 @@ pipeline{
             steps{
                 sh '''
                 docker compose pull
-                docker compose up -d --no-deps frontend backend
+                docker compose up -d
                 '''
                 echo "Deployment Completed Successfully."
             }
