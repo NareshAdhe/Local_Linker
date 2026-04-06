@@ -1,6 +1,11 @@
 pipeline{
     agent any;
     stages{
+        stage("Clean Workspace"){
+            steps{
+                deleteDir()
+            }
+        }
         stage("Code Fetch from Github"){
             steps{
                 git url:"https://github.com/NareshAdhe/Local_Linker", branch:"main"
