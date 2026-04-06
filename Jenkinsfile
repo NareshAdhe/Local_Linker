@@ -13,6 +13,7 @@ pipeline{
                     file(credentialsId: "LOCAL_LINKER_BACKEND_ENV", variable: "BACKEND_ENV"),
                     file(credentialsId: "LOCAL_LINKER_FRONTEND_ENV", variable: "FRONTEND_ENV")]){
                         sh '''
+                        sudo chown -R jenkins:jenkins /var/lib/jenkins/workspace
                         cp $BACKEND_ENV server/.env
                         cp $FRONTEND_ENV client/.env
                         '''
