@@ -1,6 +1,6 @@
 services:
-  nginx:
-    build: ./client
+  frontend:
+    image: nareshdockerclient/local-linker-frontend:latest
     ports:
       - "80:80"
       - "443:443"
@@ -8,13 +8,13 @@ services:
       - ./client/.env
     depends_on:
       - backend
-    networks:
-      - app-network
     volumes:
     - /etc/letsencrypt:/etc/letsencrypt:ro
+    networks:
+      - app-network
         
   backend:
-    build: ./server
+    image: nareshdockerclient/local-linker-backend:latest
     expose:
       - "4000"
     env_file:
