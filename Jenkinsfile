@@ -37,7 +37,7 @@ pipeline{
         }
         stage("Test"){
             steps{
-                echo "Developer/tester will provide with the tests to include."
+                echo "Developer will provide with the tests to include."
             }
         }
         stage("Deploy on EC2"){
