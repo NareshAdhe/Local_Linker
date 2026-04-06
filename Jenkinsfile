@@ -12,8 +12,10 @@ pipeline{
                 withCredentials([
                     file(credentialsId: "LOCAL_LINKER_BACKEND_ENV", variable: "BACKEND_ENV"),
                     file(credentialsId: "LOCAL_LINKER_FRONTEND_ENV", variable: "FRONTEND_ENV")]){
-                        sh "cp $BACKEND_ENV server/.env"
-                        sh "cp $FRONTEND_ENV client/.env"
+                        sh '''
+                        cp $BACKEND_ENV server/.env
+                        cp $FRONTEND_ENV client/.env
+                        '''
                 }
                 echo "Copied .env files Successfully."
             }
